@@ -13,5 +13,6 @@ namespace EventSystemAPI.Models
         public string address { get; set; }
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
+        public List<Session> sessions { get; set; }
     }
 }
