@@ -9,11 +9,7 @@ namespace EventSystemAPI.Models
 {
     public class ESContext
     {
-        public string ConnectionString { get; set; }
-        public ESContext(string ConnectionString)
-        {
-            this.ConnectionString = ConnectionString;
-        }
+        const string ConnectionString = "server=brogrammersdb.cfizdv12jry6.us-west-2.rds.amazonaws.com;port=3306;database=scheduler;user=zac;password=Brogrammers2019";
 
         private MySqlConnection GetConnection()
         {
