@@ -12,9 +12,9 @@ namespace EventSystemAPI.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return "value";
         }
 
         // GET api/values/5
