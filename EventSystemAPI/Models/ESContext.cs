@@ -26,7 +26,7 @@ namespace EventSystemAPI.Models
             Announcment announcment;
             using (var con = GetConnection())
             {
-                announcment = con.QuerySingle<Announcment>(sql, new { Announcement_ID = 1 });
+                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = 1 });
             }
             return announcment;
         }
