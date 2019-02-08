@@ -20,5 +20,6 @@ namespace EventSystemAPI.Models
         public DateTime date_time { get; set; }
         public string title { get; set; }
         public string message { get; set; }
+        public int event_id { get; set; }
     }
 }

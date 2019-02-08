@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
@@ -10,11 +11,18 @@ namespace EventSystemAPI.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private ESContext context;
+
+        public ValuesController()
+        {
+            context = HttpContext.RequestServices.GetService(typeof(ESContext)) as ESContext;
+        }
+
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<Announcment> Get()
         {
-            return new string[] { "value1", "value2" };
+            return context.GetAnnouncment();
         }
 
         // GET api/values/5
