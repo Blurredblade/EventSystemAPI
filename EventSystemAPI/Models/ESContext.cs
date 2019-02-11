@@ -16,13 +16,15 @@ namespace EventSystemAPI.Models
             return new MySqlConnection(ConnectionString);
         }
 
-        public Announcment GetAnnouncment()
+
+
+        public Announcment GetAnnouncment(int id)
         {
             string sql = "SELECT * FROM ANNOUNCEMENT WHERE ANNOUNCEMENT_ID = @Announcement_ID;";
             Announcment announcment;
             using (var con = GetConnection())
             {
-                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = 1 });
+                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = id });
             }
             return announcment;
         }
