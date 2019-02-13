@@ -7,14 +7,14 @@ using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
-    [Route("api/value")]
+    [Route("api/event")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class EventController : ControllerBase
     {
         private ESContext db;
 
         //Constructor that gets called every request
-        public ValuesController()
+        public EventController()
         {
             db = new ESContext();
         }
@@ -23,7 +23,7 @@ namespace EventSystemAPI.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            return "value";
+            return "event";
         }
 
         // GET api/values/5
