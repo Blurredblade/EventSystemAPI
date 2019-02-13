@@ -7,30 +7,33 @@ using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
-    [Route("api/event")]
+    [Route("api/team")]
     [ApiController]
-    public class EventController : ControllerBase
+    public class TeamController : ControllerBase
     {
         private ESContext db;
 
         //Constructor that gets called every request
-        public EventController()
+        public TeamController()
         {
             db = new ESContext();
         }
 
-        // GET all events
+        // GET api/values
         [HttpGet]
         public ActionResult<string> Get()
         {
-            return "event";
+            return "team";
         }
 
-        // GET api/values/5
+        // GET api/announcement/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Announcment> GetAnnouncement(int id)
         {
-            return "value";
+            if (db.GetAnnouncment(id) != null)
+                return db.GetAnnouncment(id);
+            else
+                return NotFound();
         }
 
         // POST api/values
