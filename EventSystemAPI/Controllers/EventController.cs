@@ -7,7 +7,7 @@ using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
-    [Route("api/event")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -19,18 +19,52 @@ namespace EventSystemAPI.Controllers
             db = new ESContext();
         }
 
+        //TESTED AND WORKED
         // GET all events
         [HttpGet]
-        public ActionResult<string> Get()
+        [ActionName("GetAll")]
+        public ActionResult<List<Event>> GetEventsList()
         {
-            return "event";
+            if (db.GetEventsList() != null)
+                return db.GetEventsList();
+            else
+                return NotFound();
         }
 
-        // GET api/values/5
+        //DOESNT WORK
+        // GET all events by user id
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [ActionName("EventByUserId]")]
+        public ActionResult<List<Event>> GetEventsList(int id)
         {
-            return "value";
+            if (db.GetEventsList(id) != null)
+                return db.GetEventsList(id);
+            else
+                return NotFound();
+        }
+
+        //TESTED AND WORKED
+        // GET event by id
+        [HttpGet("{id}")]
+        [ActionName("EventById")]
+        public ActionResult<Event> GetEvent(int id)
+        {
+            if (db.GetEvent(id) != null)
+                return db.GetEvent(id);
+            else
+                return NotFound();
+        }
+
+        //TESTED AND WORKED
+        // GET event with sessions
+        [HttpGet("{id}")]
+        [ActionName("EventByIdWithSessions")]
+        public ActionResult<Event> GetEventWithSessions(int id)
+        {
+            if (db.GetEventWithSessions(id) != null)
+                return db.GetEventWithSessions(id);
+            else
+                return NotFound();
         }
 
         // POST api/values

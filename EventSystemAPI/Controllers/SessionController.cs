@@ -7,7 +7,7 @@ using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
-    [Route("api/session")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class SessionController : ControllerBase
     {
@@ -19,18 +19,28 @@ namespace EventSystemAPI.Controllers
             db = new ESContext();
         }
 
-        // GET api/values
-        [HttpGet]
-        public ActionResult<string> Get()
+        //RETURNS EMPTY
+        // GET all sessions by event
+        [HttpGet("{id}")]
+        [ActionName("SessionByEvent")]
+        public ActionResult<List<Session>> GetSessionsByEvent(int event_id)
         {
-            return "Session";
+            if (db.GetSessionsByEvent(event_id) != null)
+                return db.GetSessionsByEvent(event_id);
+            else
+                return NotFound();
         }
 
-        // GET api/values/5
+        //TESTED AND WORKED
+        // GET session by id
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [ActionName("SessionById")]
+        public ActionResult<Session> GetSession(int id)
         {
-            return "value";
+            if (db.GetSession(id) != null)
+                return db.GetSession(id);
+            else
+                return NotFound();
         }
 
         // POST api/values

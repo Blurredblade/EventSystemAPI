@@ -7,7 +7,7 @@ using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
-    [Route("api/user")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -19,19 +19,38 @@ namespace EventSystemAPI.Controllers
             db = new ESContext();
         }
 
-        // GET api/values
-        [HttpGet]
-        public ActionResult<string> Get()
+        //CONTROLLER OR SOMETHING DOESNT WORK http 500
+        // GET user by team
+        [HttpGet("{id}")]
+        [ActionName("UserByTeam")]
+        public ActionResult<List<User>> GetTeamUsers(int id)
         {
-            return "user";
+            if (db.GetTeamUsers(id) != null)
+                return db.GetTeamUsers(id);
+            else
+                return NotFound();
         }
 
-        // GET api/announcement/5
+        //CONTROLLER OR SOMETHING DOESNT WORK http 500
+        // GET user by id
         [HttpGet("{id}")]
-        public ActionResult<Announcment> GetAnnouncement(int id)
+        [ActionName("UserById")]
+        public ActionResult<User> GetUser(int id)
         {
-            if (db.GetAnnouncment(id) != null)
-                return db.GetAnnouncment(id);
+            if (db.GetUser(id) != null)
+                return db.GetUser(id);
+            else
+                return NotFound();
+        }
+
+        //CONTROLLER OR SOMETHING DOESNT WORK http 500
+        // GET user by session
+        [HttpGet("{id}")]
+        [ActionName("UserBySession")]
+        public ActionResult<List<User>> GetSessionUsers(int id)
+        {
+            if (db.GetSessionUsers(id) != null)
+                return db.GetSessionUsers(id);
             else
                 return NotFound();
         }

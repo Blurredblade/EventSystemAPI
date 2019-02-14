@@ -7,7 +7,7 @@ using EventSystemAPI.Models;
 
 namespace EventSystemAPI.Controllers
 {
-    [Route("api/announcement")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AnnouncementController : ControllerBase
     {
@@ -19,15 +19,20 @@ namespace EventSystemAPI.Controllers
             db = new ESContext();
         }
 
-        // GET api/values
-        [HttpGet]
-        public ActionResult<string> Get()
+        // GET announcement by event
+        [HttpGet("{id}")]
+        [ActionName("AnnouncementByEvent")]
+        public ActionResult<List<Announcment>> GetAnnouncmentsByEvent(int id)
         {
-            return "announcement";
+            if (db.GetAnnouncmentsByEvent(id) != null)
+                return db.GetAnnouncmentsByEvent(id);
+            else
+                return NotFound();
         }
 
-        // GET api/announcement/5
+        // GET announcement by id
         [HttpGet("{id}")]
+        [ActionName("AnnouncementById")]
         public ActionResult<Announcment> GetAnnouncement(int id)
         {
             if (db.GetAnnouncment(id) != null)
