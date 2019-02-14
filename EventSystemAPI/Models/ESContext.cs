@@ -1,32 +1,452 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Dapper;
 
 namespace EventSystemAPI.Models
 {
-    public class ESContext
+    public class ESContext : IContext
     {
         const string ConnectionString = "server=brogrammersdb.cfizdv12jry6.us-west-2.rds.amazonaws.com;port=3306;database=scheduler;user=zac;password=Brogrammers2019";
+
+
+        /* \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+         * \\\\\\\GET Functions\\\\\\\\\
+         * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
         private MySqlConnection GetConnection()
         {
             return new MySqlConnection(ConnectionString);
         }
 
-
-
-        public Announcment GetAnnouncment(int id)
+        public Event GetEvent(int event_id)
         {
-            string sql = "SELECT * FROM ANNOUNCEMENT WHERE ANNOUNCEMENT_ID = @Announcement_ID;";
+            string sql = "CALL GetEvent(@Event_ID);";
+            Event even;
+            using (var con = GetConnection())
+            {
+                even = con.QuerySingleOrDefault<Event>(sql, new { Event_ID = event_id });
+
+            }
+            return even;
+        }
+
+        public Event GetEventWithSessions(int event_id)
+        {
+            Event even = GetEvent(event_id);
+            even.sessions = GetSessionsByEvent(even.event_id);
+            return even;
+        }
+
+        public List<Event> GetEventsList()
+        {
+            string sql = "CALL GetAllEvents();";
+            List<Event> events;
+            using (var con = GetConnection())
+            {
+                events = con.Query<Event>(sql).ToList();
+            }
+            return events;
+        }
+
+        public List<Event> GetEventsList(int user_id)
+        {
+            string sql = "CALL GetUsersEvents(@User_ID);";
+            List<Event> events;
+            using (var con = GetConnection())
+            {
+                events = con.Query<Event>(sql, new { User_ID = user_id }).ToList();
+            }
+            return events;
+        }
+
+        public Session GetSession(int session_id)
+        {
+            string sql = "CALL GetSession(@Session_ID);";
+            Session session;
+            using (var con = GetConnection())
+            {
+                session = con.QuerySingleOrDefault<Session>(sql, new { Session_ID = session_id });
+            }
+            return session;
+        }
+
+        public List<Session> GetSessionsByEvent(int event_id)
+        {
+            string sql = "CALL GetSessionsByEvent(@Event_ID);";
+            List<Session> sessions;
+            using (var con = GetConnection())
+            {
+                sessions = con.Query<Session>(sql, new { Event_ID = event_id }).ToList();
+            }
+            return sessions;
+        }
+
+        public List<Team> GetTeamsByEvent(int event_id)
+        {
+            string sql = "CALL GetEventTeams(@Event_ID);";
+            List<Team> teams;
+            using (var con = GetConnection())
+            {
+                teams = con.Query<Team>(sql, new { Event_ID = event_id }).ToList();
+            }
+            return teams;
+        }
+
+        public Team GetTeam(int team_id)
+        {
+            string sql = "CALL GetTeam(@Team_ID);";
+            Team team;
+            using (var con = GetConnection())
+            {
+                team = con.QuerySingleOrDefault<Team>(sql, new { Team_ID = team_id });
+            }
+            return team;
+        }
+
+        public Announcment GetAnnouncment(int announcement_id)
+        {
+            string sql = "CALL GetAnnouncement(@Announcement_ID);";
             Announcment announcment;
             using (var con = GetConnection())
             {
-                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = id });
+                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = announcement_id });
             }
             return announcment;
+        }
+
+        public List<Announcment> GetAnnouncmentsByEvent(int event_id)
+        {
+
+            string sql = "CALL GetAnnouncementsForEvent(@Event_ID);";
+            List<Announcment> announcments;
+            using (var con = GetConnection())
+            {
+                announcments = con.Query<Announcment>(sql, new { Event_ID = event_id }).ToList();
+            }
+            return announcments;
+        }
+
+        public User GetUser(int user_id)
+        {
+            string sql = "CALL GetUser(@User_ID);";
+            User user;
+            using (var con = GetConnection())
+            {
+                user = con.QuerySingleOrDefault<User>(sql, new { User_ID = user_id });
+            }
+            return user;
+        }
+
+        public List<User> GetTeamUsers(int team_id)
+        {
+            string sql = "CALL GetTeamUsers(@Team_ID);";
+            List<User> users;
+            using (var con = GetConnection())
+            {
+                users = con.Query<User>(sql, new { Team_ID = team_id }).ToList();
+            }
+            return users;
+        }
+
+        public List<User> GetSessionUsers(int session_id)
+        {
+            string sql = "CALL GetSessionUsers(@Session_ID);";
+            List<User> users;
+            using (var con = GetConnection())
+            {
+                users = con.Query<User>(sql, new { Session_ID = session_id }).ToList();
+            }
+            return users;
+        }
+
+
+        /*\\\\\\\\\\\\\\\\\\\\\\
+         *\\\CREATE Functions\\\
+         *\\\\\\\\\\\\\\\\\\\\\\*/
+
+        public void CreateEvent(Event e) {
+            string sql = "CreateEvent(@Address, @Start_Date, @End_Date, @Event_Name, @Description);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Address = e.address,
+                    Start_Date = e.start_date,
+                    End_Date = e.end_date,
+                    Event_Name = e.event_name,
+                    Description = e.description
+                });
+            }
+        }
+
+        public void CreateSession(int event_id, Session s)
+        {
+            string sql = "CreateSession(@Session_Name, @Capacity, @Open_Slots, @Start_Date_Time, @End_Date_Time, @Event_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Session_Name = s.session_name,
+                    Capacity = s.capacity,
+                    Open_Slots = s.capacity,
+                    Start_Date_Time = s.start_date_time,
+                    End_Date_Time = s.end_date_time,
+                    Event_ID = event_id
+                });
+            }
+        }
+
+        public void CreateTeam(int event_id, Team t)
+        {
+            string sql = "CreateTeam(@Team_Name, @Event_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Team_Name = t.team_name,
+                    Event_ID = event_id
+                });
+            }
+        }
+
+        public void CreateAnnouncement(int event_id, Announcment a)
+        {
+            string sql = "CreateAnnouncement(@Date_Time, @Title, @Message, @Event_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Date_Time = a.date_time,
+                    Title = a.title,
+                    Message = a.message,
+                    Event_ID = event_id
+                });
+            }
+        }
+
+        public void CreateUser(User u)
+        {
+            string sql = "CreateUser(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    First_Name = u.first_name,
+                    Last_Name = u.last_name,
+                    Email = u.email,
+                    Password = u.password,
+                    Phone = u.phone,
+                    IsAdmin = u.isAdmin
+                });
+            }
+        }
+
+
+        /*\\\\\\\\\\\\\\\\\\\\\\
+         *\\\UPDATE functions\\\
+         *\\\\\\\\\\\\\\\\\\\\\\*/
+
+        public void UpdateEvent(Event e)
+        {
+            string sql = "UPDATE EVENT SET address = @Address, start_date = @Start_Date, end_date = @End_Date, event_name = @Event_Name, description = @Description WHERE event_id = @Event_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Address = e.address,
+                    Start_Date = e.start_date,
+                    End_Date = e.end_date,
+                    Event_Name = e.event_name,
+                    Description = e.description,
+                    Event_ID = e.event_id
+                });
+            }
+        }
+
+        public void UpdateSession(Session s)
+        {
+            string sql = "UPDATE SESSION SET session_name = @Session_Name, capacity = @Capacity, open_slots = @Open_Slots, start_date_time = @Start_Date_Time, end_date_time = @End_Date_Time WHERE session_id = @Session_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Session_Name = s.session_name,
+                    Capacity = s.capacity,
+                    Open_Slots = s.capacity,
+                    Start_Date_Time = s.start_date_time,
+                    End_Date_Time = s.end_date_time,
+                    Session_ID = s.session_id
+                });
+            }
+        }
+
+        public void UpdateTeam(Team t)
+        {
+            string sql = "UPDATE TEAM SET team_name = @Team_Name WHERE team_id = @Team_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Team_Name = t.team_name,
+                    Team_ID = t.team_id
+                });
+            }
+        }
+
+        public void UpdateAnnouncement(Announcment a)
+        {
+            string sql = "UPDATE ANNOUNCEMENT SET date_time = @Date_Time, title = @Title, message = @Message WHERE announcement_id = @A_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Date_Time = a.date_time,
+                    Title = a.title,
+                    Message = a.message,
+                    A_ID = a.announcement_id
+                });
+            }
+        }
+
+        public void UpdateUser(User u)
+        {
+            string sql = "UPDATE USER SET first_name = @First_Name, last_name = @Last_Name, email = @Email, password = @Password, phone = @Phone, is_admin = @Is_Admin WHERE user_id = @U_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    First_Name = u.first_name,
+                    Last_Name = u.last_name,
+                    Email = u.email,
+                    Password = u.password,
+                    Phone = u.phone,
+                    IsAdmin = u.isAdmin,
+                    U_ID = u.user_id
+                });
+            }
+        }
+
+        public void RegisterUser(int session_id, int user_id)
+        {
+            string sql = "INSERT INTO REGISTRATION VALUES (@Session_ID, @User_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Session_ID = session_id,
+                    User_ID = user_id
+                });
+            }
+        }
+
+        public void AddUserToTeam(int team_id, int user_id)
+        {
+            string sql = "INSERT INTO USER_TEAM VALUES (@Team_ID, @User_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Team_ID = team_id,
+                    User_ID = user_id
+                });
+            }
+        }
+
+
+        /*\\\\\\\\\\\\\\\\\\\\\\
+         *\\\DELETE FUNCTIONS\\\
+         *\\\\\\\\\\\\\\\\\\\\\\*/
+        
+        //Deletes Event along with all sessions, teams, and announcements for that event
+        public void DeleteEvent(int event_id)
+        {
+            string sql = "DELETE FROM EVENT WHERE event_id = @Event_ID;" +
+                "DELETE FROM SESSION WHERE event_id = @Event_ID;" +
+                "DELETE FROM TEAM WHERE event_id = @Event_ID;" +
+                "DELETE FROM ANNOUNCEMENT WHERE event_id = @Event_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Event_ID = event_id
+                });
+            }
+        }
+
+        public void DeleteSession(int session_id)
+        {
+            string sql = "DELETE FROM SESSION WHERE session_id = @Session_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Session_ID = session_id
+                });
+            }
+        }
+
+        public void DeleteTeam(int team_id)
+        {
+            string sql = "DELETE FROM TEAM WHERE team_id = @Team_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Team_ID = team_id
+                });
+            }
+        }
+
+        public void DeleteAnnouncement(int announcement_id)
+        {
+            string sql = "DELETE FROM ANNOUNCEMENT WHERE announcement_id = @Announcement_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Announcement_ID = announcement_id
+                });
+            }
+        }
+
+        public void DeleteUser(int user_id)
+        {
+            string sql = "DELETE FROM USER WHERE user_id = @User_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    User_ID = user_id
+                });
+            }
+        }
+
+        public void RemoveUserFromSession(int session_id, int user_id)
+        {
+            string sql = "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    User_ID = user_id,
+                    Session_ID = session_id
+                });
+            }
+        }
+
+        public void RemoveUserFromTeam(int team_id, int user_id)
+        {
+            string sql = "DELETE FROM TEAM WHERE user_id = @User_ID AND team_id = @Team_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    User_ID = user_id,
+                    Team_ID = team_id
+                });
+            }
         }
     }
 }
