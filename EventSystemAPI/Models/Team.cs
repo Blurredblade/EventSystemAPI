@@ -18,5 +18,6 @@ namespace EventSystemAPI.Models
         public int team_id { get; set; }
         public string team_name { get; set; }
         public List<User> members { get; set; }
+        public int event_id { get; set; }
     }
 }
