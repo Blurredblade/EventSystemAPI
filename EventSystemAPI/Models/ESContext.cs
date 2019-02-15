@@ -32,13 +32,6 @@ namespace EventSystemAPI.Models
             return even;
         }
 
-        public Event GetEventWithSessions(int event_id)
-        {
-            Event even = GetEvent(event_id);
-            even.sessions = GetSessionsByEvent(even.event_id);
-            return even;
-        }
-
         public List<Event> GetEventsList()
         {
             string sql = "CALL GetAllEvents();";
@@ -91,6 +84,12 @@ namespace EventSystemAPI.Models
             {
                 teams = con.Query<Team>(sql, new { Event_ID = event_id }).ToList();
             }
+            /*
+            foreach (Team t in teams)
+            {
+                t.members = GetTeamUsers(t.team_id);
+            }
+            */
             return teams;
         }
 
@@ -102,28 +101,29 @@ namespace EventSystemAPI.Models
             {
                 team = con.QuerySingleOrDefault<Team>(sql, new { Team_ID = team_id });
             }
+            team.members = GetTeamUsers(team_id);
             return team;
         }
 
-        public Announcment GetAnnouncment(int announcement_id)
+        public Announcement GetAnnouncement(int announcement_id)
         {
             string sql = "CALL GetAnnouncement(@Announcement_ID);";
-            Announcment announcment;
+            Announcement announcment;
             using (var con = GetConnection())
             {
-                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = announcement_id });
+                announcment = con.QuerySingleOrDefault<Announcement>(sql, new { Announcement_ID = announcement_id });
             }
             return announcment;
         }
 
-        public List<Announcment> GetAnnouncmentsByEvent(int event_id)
+        public List<Announcement> GetAnnouncementsByEvent(int event_id)
         {
 
             string sql = "CALL GetAnnouncementsForEvent(@Event_ID);";
-            List<Announcment> announcments;
+            List<Announcement> announcments;
             using (var con = GetConnection())
             {
-                announcments = con.Query<Announcment>(sql, new { Event_ID = event_id }).ToList();
+                announcments = con.Query<Announcement>(sql, new { Event_ID = event_id }).ToList();
             }
             return announcments;
         }
@@ -167,7 +167,7 @@ namespace EventSystemAPI.Models
          *\\\\\\\\\\\\\\\\\\\\\\*/
 
         public void CreateEvent(Event e) {
-            string sql = "CreateEvent(@Address, @Start_Date, @End_Date, @Event_Name, @Description);";
+            string sql = "CALL CreateEvent(@Address, @Start_Date, @End_Date, @Event_Name, @Description);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -181,9 +181,9 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void CreateSession(int event_id, Session s)
+        public void CreateSession(Session s)
         {
-            string sql = "CreateSession(@Session_Name, @Capacity, @Open_Slots, @Start_Date_Time, @End_Date_Time, @Event_ID);";
+            string sql = "CALL CreateSession(@Session_Name, @Capacity, @Open_Slots, @Start_Date_Time, @End_Date_Time, @Event_ID);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -193,27 +193,27 @@ namespace EventSystemAPI.Models
                     Open_Slots = s.capacity,
                     Start_Date_Time = s.start_date_time,
                     End_Date_Time = s.end_date_time,
-                    Event_ID = event_id
+                    Event_ID = s.event_id
                 });
             }
         }
 
-        public void CreateTeam(int event_id, Team t)
+        public void CreateTeam(Team t)
         {
-            string sql = "CreateTeam(@Team_Name, @Event_ID);";
+            string sql = "CALL CreateTeam(@Team_Name, @Event_ID);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
                 {
                     Team_Name = t.team_name,
-                    Event_ID = event_id
+                    Event_ID = t.event_id
                 });
             }
         }
 
-        public void CreateAnnouncement(int event_id, Announcment a)
+        public void CreateAnnouncement(Announcement a)
         {
-            string sql = "CreateAnnouncement(@Date_Time, @Title, @Message, @Event_ID);";
+            string sql = "CALL CreateAnnouncement(@Date_Time, @Title, @Message, @Event_ID);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -221,14 +221,14 @@ namespace EventSystemAPI.Models
                     Date_Time = a.date_time,
                     Title = a.title,
                     Message = a.message,
-                    Event_ID = event_id
+                    Event_ID = a.event_id
                 });
             }
         }
 
         public void CreateUser(User u)
         {
-            string sql = "CreateUser(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);";
+            string sql = "CALL CreateUser(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -238,7 +238,7 @@ namespace EventSystemAPI.Models
                     Email = u.email,
                     Password = u.password,
                     Phone = u.phone,
-                    IsAdmin = u.isAdmin
+                    IsAdmin = u.is_admin
                 });
             }
         }
@@ -295,7 +295,7 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void UpdateAnnouncement(Announcment a)
+        public void UpdateAnnouncement(Announcement a)
         {
             string sql = "UPDATE ANNOUNCEMENT SET date_time = @Date_Time, title = @Title, message = @Message WHERE announcement_id = @A_ID;";
             using (var con = GetConnection())
@@ -322,7 +322,7 @@ namespace EventSystemAPI.Models
                     Email = u.email,
                     Password = u.password,
                     Phone = u.phone,
-                    IsAdmin = u.isAdmin,
+                    IsAdmin = u.is_admin,
                     U_ID = u.user_id
                 });
             }

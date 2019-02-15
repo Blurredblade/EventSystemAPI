@@ -28,7 +28,7 @@ namespace EventSystemAPI.Models
         public string event_name { get; set; }
         public string description { get; set; }
         public List<Session> sessions { get; set; }
-        public List<Announcment> announcments { get; set; }
+        public List<Announcement> announcments { get; set; }
         public List<Team> teams { get; set; }
     }
 }
