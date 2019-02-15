@@ -32,13 +32,6 @@ namespace EventSystemAPI.Models
             return even;
         }
 
-        public Event GetEventWithSessions(int event_id)
-        {
-            Event even = GetEvent(event_id);
-            even.sessions = GetSessionsByEvent(even.event_id);
-            return even;
-        }
-
         public List<Event> GetEventsList()
         {
             string sql = "CALL GetAllEvents();";
@@ -91,6 +84,12 @@ namespace EventSystemAPI.Models
             {
                 teams = con.Query<Team>(sql, new { Event_ID = event_id }).ToList();
             }
+            /*
+            foreach (Team t in teams)
+            {
+                t.members = GetTeamUsers(t.team_id);
+            }
+            */
             return teams;
         }
 
@@ -102,28 +101,29 @@ namespace EventSystemAPI.Models
             {
                 team = con.QuerySingleOrDefault<Team>(sql, new { Team_ID = team_id });
             }
+            team.members = GetTeamUsers(team_id);
             return team;
         }
 
-        public Announcment GetAnnouncment(int announcement_id)
+        public Announcement GetAnnouncement(int announcement_id)
         {
             string sql = "CALL GetAnnouncement(@Announcement_ID);";
-            Announcment announcment;
+            Announcement announcment;
             using (var con = GetConnection())
             {
-                announcment = con.QuerySingleOrDefault<Announcment>(sql, new { Announcement_ID = announcement_id });
+                announcment = con.QuerySingleOrDefault<Announcement>(sql, new { Announcement_ID = announcement_id });
             }
             return announcment;
         }
 
-        public List<Announcment> GetAnnouncmentsByEvent(int event_id)
+        public List<Announcement> GetAnnouncementsByEvent(int event_id)
         {
 
             string sql = "CALL GetAnnouncementsForEvent(@Event_ID);";
-            List<Announcment> announcments;
+            List<Announcement> announcments;
             using (var con = GetConnection())
             {
-                announcments = con.Query<Announcment>(sql, new { Event_ID = event_id }).ToList();
+                announcments = con.Query<Announcement>(sql, new { Event_ID = event_id }).ToList();
             }
             return announcments;
         }
@@ -211,7 +211,7 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void CreateAnnouncement(int event_id, Announcment a)
+        public void CreateAnnouncement(int event_id, Announcement a)
         {
             string sql = "CreateAnnouncement(@Date_Time, @Title, @Message, @Event_ID);";
             using (var con = GetConnection())
@@ -238,7 +238,7 @@ namespace EventSystemAPI.Models
                     Email = u.email,
                     Password = u.password,
                     Phone = u.phone,
-                    IsAdmin = u.isAdmin
+                    IsAdmin = u.is_admin
                 });
             }
         }
@@ -295,7 +295,7 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void UpdateAnnouncement(Announcment a)
+        public void UpdateAnnouncement(Announcement a)
         {
             string sql = "UPDATE ANNOUNCEMENT SET date_time = @Date_Time, title = @Title, message = @Message WHERE announcement_id = @A_ID;";
             using (var con = GetConnection())
@@ -322,7 +322,7 @@ namespace EventSystemAPI.Models
                     Email = u.email,
                     Password = u.password,
                     Phone = u.phone,
-                    IsAdmin = u.isAdmin,
+                    IsAdmin = u.is_admin,
                     U_ID = u.user_id
                 });
             }
