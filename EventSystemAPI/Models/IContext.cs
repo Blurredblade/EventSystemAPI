@@ -15,8 +15,8 @@ namespace EventSystemAPI.Models
         Session GetSession(int session_id);
         List<Team> GetTeamsByEvent(int event_id);
         Team GetTeam(int team_id);
-        List<Announcment> GetAnnouncmentsByEvent(int event_id);
-        Announcment GetAnnouncment(int announcment_id);
+        List<Announcement> GetAnnouncementsByEvent(int event_id);
+        Announcement GetAnnouncement(int announcment_id);
         User GetUser(int user_id);
         List<User> GetTeamUsers(int team_id);
         List<User> GetSessionUsers(int session_id);
