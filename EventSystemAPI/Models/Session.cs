@@ -24,6 +24,7 @@ namespace EventSystemAPI.Models
         public int open_slots { get; set; }
         public DateTime start_date_time { get; set; }
         public DateTime end_date_time { get; set; }
+        public int event_id { get; set; }
         public List<User> attendees { get; set; }
     }
 }

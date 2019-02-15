@@ -14,11 +14,12 @@ namespace EventSystemAPI.Models
      * title - Title of the announcement instance
      * message - Message of the announcement instance
      */
-    public class Announcment
+    public class Announcement
     {
         public int announcement_id { get; set; }
         public DateTime date_time { get; set; }
         public string title { get; set; }
         public string message { get; set; }
+        public int event_id { get; set; }
     }
 }
