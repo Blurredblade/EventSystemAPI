@@ -51,7 +51,7 @@ namespace EventSystemAPI.Controllers
         /* ROUTE esapi/event/{event_id}
         * GET an event by its id
         */
-        [HttpGet("{event_id:int}")]
+        [HttpGet("{event_id:int}", Name = "GetEvent")]
         [ActionName("event")]
         public ActionResult<Event> GetEvent(int event_id)
         {
@@ -85,7 +85,7 @@ namespace EventSystemAPI.Controllers
         /* ROUTE esapi/event-sessions/{session_id}
          * GET a session by id
          */
-        [HttpGet("{session_id:int}")]
+        [HttpGet("{session_id}", Name ="GetSession")]
         [ActionName("session")]
         public ActionResult<Session> GetSession(int session_id)
         {
@@ -104,7 +104,7 @@ namespace EventSystemAPI.Controllers
         /* ROUTE esapi/team/{team_id}
          * GET a team by id
          */
-        [HttpGet("{team_id:int}")]
+        [HttpGet("{team_id:int}", Name = "GetTeam")]
         [ActionName("team")]
         public ActionResult<Team> GetTeam(int team_id)
         {
@@ -153,7 +153,7 @@ namespace EventSystemAPI.Controllers
         /* ROUTE esapi/announcement/{announcement_id}
          * GET an announcement by id
          */
-        [HttpGet("{announcement_id:int}")]
+        [HttpGet("{announcement_id:int}", Name = "GetAnnouncement")]
         [ActionName("announcement")]
         public ActionResult<Announcement> GetAnnouncement(int announcement_id)
         {
@@ -172,7 +172,7 @@ namespace EventSystemAPI.Controllers
         /* ROUTE esapi/user/{user_id}
          * GET a user by id
          */
-        [HttpGet("{user_id:int}")]
+        [HttpGet("{user_id:int}", Name = "GetUser")]
         [ActionName("user")]
         public ActionResult<User> GetUser(int user_id)
         {
