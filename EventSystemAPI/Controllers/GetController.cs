@@ -214,5 +214,21 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        /* ROUTE esapi/userlogin/{email}/{password}
+        * GET a user by email and password
+        */
+        [HttpGet("{email}/{password}")]
+        [ActionName("userlogin")]
+        public ActionResult<User> GetUser(string email, string password)
+        {
+            User user = db.GetUser(email, password);
+            if (user == null)
+            {
+                //return null;
+                return NotFound();
+            }
+            return user;
+        }
+
     }
 }

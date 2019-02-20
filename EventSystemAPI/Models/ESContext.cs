@@ -139,6 +139,17 @@ namespace EventSystemAPI.Models
             return user;
         }
 
+        public User GetUser(string email, string password)
+        {
+            string sql = "select * from USER where email=@Email and password=@Password";
+            User user;
+            using (var con = GetConnection())
+            {
+                user = con.QuerySingleOrDefault<User>(sql, new { Email = email, Password = password });
+            }
+            return user;
+        }
+
         public List<User> GetTeamUsers(int team_id)
         {
             string sql = "CALL GetTeamUsers(@Team_ID);";
