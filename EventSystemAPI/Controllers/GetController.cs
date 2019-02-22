@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using EventSystemAPI.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace EventSystemAPI.Controllers
 {
@@ -28,6 +29,7 @@ namespace EventSystemAPI.Controllers
          * a list of all events the user is attending
          */
         [HttpGet("{user_id:int?}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("all-events")]
         public ActionResult<List<Event>> GetEventsList(int user_id)
         {
@@ -52,6 +54,7 @@ namespace EventSystemAPI.Controllers
         * GET an event by its id
         */
         [HttpGet("{event_id:int}", Name = "GetEvent")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("event")]
         public ActionResult<Event> GetEvent(int event_id)
         {
@@ -71,6 +74,7 @@ namespace EventSystemAPI.Controllers
         * GET all the sessions in an event
         */
         [HttpGet("{event_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("event-sessions")]
         public ActionResult<List<Session>> GetSessionsByEvent(int event_id)
         {
@@ -86,6 +90,7 @@ namespace EventSystemAPI.Controllers
          * GET a session by id
          */
         [HttpGet("{session_id}", Name ="GetSession")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("session")]
         public ActionResult<Session> GetSession(int session_id)
         {
@@ -105,6 +110,7 @@ namespace EventSystemAPI.Controllers
          * GET a team by id
          */
         [HttpGet("{team_id:int}", Name = "GetTeam")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("team")]
         public ActionResult<Team> GetTeam(int team_id)
         {
@@ -120,6 +126,7 @@ namespace EventSystemAPI.Controllers
          * GET a list of teams for an event
          */
         [HttpGet("{event_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("event-teams")]
         public ActionResult<List<Team>> GetTeamsByEvent(int event_id)
         {
@@ -139,6 +146,7 @@ namespace EventSystemAPI.Controllers
          * GET a list of announcements for an event
          */
         [HttpGet("{event_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("event-announcements")]
         public ActionResult<List<Announcement>> GetAnnouncementsByEvent(int event_id)
         {
@@ -154,6 +162,7 @@ namespace EventSystemAPI.Controllers
          * GET an announcement by id
          */
         [HttpGet("{announcement_id:int}", Name = "GetAnnouncement")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("announcement")]
         public ActionResult<Announcement> GetAnnouncement(int announcement_id)
         {
@@ -173,6 +182,7 @@ namespace EventSystemAPI.Controllers
          * GET a user by id
          */
         [HttpGet("{user_id:int}", Name = "GetUser")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("user")]
         public ActionResult<User> GetUser(int user_id)
         {
@@ -188,6 +198,7 @@ namespace EventSystemAPI.Controllers
          * GET list of all users on a team
          */
         [HttpGet("{team_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("team-users")]
         public ActionResult<List<User>> GetTeamUsers(int team_id)
         {
@@ -203,6 +214,7 @@ namespace EventSystemAPI.Controllers
          * GET list of all users attending the given session
          */
         [HttpGet("{session_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("session-users")]
         public ActionResult<List<User>> GetSessionUsers(int session_id)
         {
@@ -218,6 +230,7 @@ namespace EventSystemAPI.Controllers
         * GET a user by email and password
         */
         [HttpGet("{email}/{password}")]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("userlogin")]
         public ActionResult<User> GetUser(string email, string password)
         {
