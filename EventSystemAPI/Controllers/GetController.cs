@@ -9,7 +9,7 @@ namespace EventSystemAPI.Controllers
     public class GetController : ControllerBase
     {
         private ESContext db;
-
+        
         //Constructor that gets called every request
         public GetController()
         {
