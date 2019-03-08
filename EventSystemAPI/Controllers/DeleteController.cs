@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EventSystemAPI.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace EventSystemAPI.Controllers
 {
@@ -19,9 +20,12 @@ namespace EventSystemAPI.Controllers
             db = new ESContext();
         }
         
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{event_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("delete-event")]
+        public void DeleteEvent(int event_id)
         {
+            db.DeleteEvent(event_id);
         }
     }
 
