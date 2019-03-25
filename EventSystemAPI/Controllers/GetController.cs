@@ -226,6 +226,22 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        /* ROUTE esapi/session-users/{session_id}
+         * GET list of all users attending the given session
+         */
+        [HttpGet("{event_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("event-users")]
+        public ActionResult<List<User>> GetEventUsers(int event_id)
+        {
+            List<User> users = db.GetEventUsers(event_id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
         /* ROUTE esapi/userlogin/{email}/{password}
         * GET a user by email and password
         */

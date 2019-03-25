@@ -27,11 +27,8 @@ namespace EventSystemAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-<<<<<<< HEAD
             services.Configure<DatabaseConnection>(connection => Configuration.GetSection("DefaultConnection"));
-=======
             services.AddCors(options => options.AddPolicy("AllowSpecificOrigin", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
->>>>>>> dddfdfac98ec79c5b21a8dc5732f8f76636b99e9
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

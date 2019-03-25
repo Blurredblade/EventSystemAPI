@@ -161,9 +161,20 @@ namespace EventSystemAPI.Models
             return users;
         }
 
+        public List<User> GetEventUsers(int event_id)
+        {
+            string sql = "SELECT * FROM USER where user_id in (SELECT user_id FROM REGISTRATION where session_id in (Select session_id FROM SESSION where event_id = @Event_ID));";
+            List<User> users;
+            using(var con = GetConnection())
+            {
+                users = con.Query<User>(sql, new { Event_ID = event_id }).ToList();
+            }
+            return users;
+        }
+
         public List<User> GetSessionUsers(int session_id)
         {
-            string sql = "CALL GetSessionUsers(@Session_ID);";
+            string sql = "SELECT * FROM USER where user_id in (SELECT user_id FROM REGISTRATION where session_id = @Session_ID);";
             List<User> users;
             using (var con = GetConnection())
             {
