@@ -34,7 +34,7 @@ namespace EventSystemAPI.Models
 
         public List<Event> GetEventsList()
         {
-            string sql = "CALL GetAllEvents();";
+            string sql = "SELECT * FROM EVENT;";
             List<Event> events;
             using (var con = GetConnection())
             {
@@ -45,13 +45,25 @@ namespace EventSystemAPI.Models
 
         public List<Event> GetEventsList(int user_id)
         {
-            string sql = "CALL GetUsersEvents(@User_ID);";
+            string sql = "SELECT * FROM EVENT WHERE event_id IN (SELECT event_id FROM SESSION WHERE session_id IN (SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC LIMIT 2; ";
             List<Event> events;
             using (var con = GetConnection())
             {
                 events = con.Query<Event>(sql, new { User_ID = user_id }).ToList();
             }
             return events;
+        }
+
+        public List<Session> GetUsersSessionsList(int user_id)
+        {
+            string sql = "SELECT * FROM SESSION WHERE session_id IN (SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID); ";
+            List<Session> sessions;
+            using (var con = GetConnection())
+            {
+                sessions = con.Query<Session>(sql, new { User_ID = user_id }).ToList();
+            }
+            return sessions;
+
         }
 
         public Session GetSession(int session_id)

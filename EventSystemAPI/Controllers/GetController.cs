@@ -50,6 +50,7 @@ namespace EventSystemAPI.Controllers
             return events;
         }
 
+
         /* ROUTE esapi/event/{event_id}
         * GET an event by its id
         */
@@ -100,6 +101,20 @@ namespace EventSystemAPI.Controllers
                 return NotFound();
             }
             return session;
+        }
+
+        [HttpGet("{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("user-sessions")]
+        public ActionResult<List<Session>> GetUsersSessionList(int user_id)
+        {
+            List<Session> sessions;
+            sessions = db.GetUsersSessionsList(user_id);
+            if (sessions == null)
+            {
+                return NotFound();
+            }
+            return sessions;
         }
 
         /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
