@@ -252,7 +252,9 @@ namespace EventSystemAPI.Models
 
         public void CreateAnnouncement(Announcement a)
         {
-            string sql = "CALL CreateAnnouncement(@Date_Time, @Title, @Message, @Event_ID);";
+            string sql = "INSERT INTO ANNOUNCEMENT(date_time, title, message, event_id)" +
+                            "SELECT @Date_Time, @Title, @Message, event_id" +
+                            "FROM EVENT WHERE event_id = @Event_ID);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -267,7 +269,8 @@ namespace EventSystemAPI.Models
 
         public void CreateUser(User u)
         {
-            string sql = "CALL CreateUser(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);";
+            string sql = "INSERT INTO USER (first_name, last_name, email, password, phone, is_admin)" +
+                            "VALUES(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -278,6 +281,32 @@ namespace EventSystemAPI.Models
                     Password = u.password,
                     Phone = u.phone,
                     IsAdmin = u.is_admin
+                });
+            }
+        }
+
+        public void RegisterUser(int session_id, int user_id)
+        {
+            string sql = "INSERT INTO REGISTRATION VALUES (@Session_ID, @User_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Session_ID = session_id,
+                    User_ID = user_id
+                });
+            }
+        }
+
+        public void AddUserToTeam(int team_id, int user_id)
+        {
+            string sql = "INSERT INTO USER_TEAM VALUES (@Team_ID, @User_ID);";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Team_ID = team_id,
+                    User_ID = user_id
                 });
             }
         }
@@ -367,31 +396,7 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void RegisterUser(int session_id, int user_id)
-        {
-            string sql = "INSERT INTO REGISTRATION VALUES (@Session_ID, @User_ID);";
-            using (var con = GetConnection())
-            {
-                con.Execute(sql, new
-                {
-                    Session_ID = session_id,
-                    User_ID = user_id
-                });
-            }
-        }
 
-        public void AddUserToTeam(int team_id, int user_id)
-        {
-            string sql = "INSERT INTO USER_TEAM VALUES (@Team_ID, @User_ID);";
-            using (var con = GetConnection())
-            {
-                con.Execute(sql, new
-                {
-                    Team_ID = team_id,
-                    User_ID = user_id
-                });
-            }
-        }
 
 
         /*\\\\\\\\\\\\\\\\\\\\\\
@@ -402,9 +407,9 @@ namespace EventSystemAPI.Models
         public void DeleteEvent(int event_id)
         {
             string sql = "DELETE FROM EVENT WHERE event_id = @Event_ID;" +
-                "DELETE FROM SESSION WHERE event_id = @Event_ID;" +
-                "DELETE FROM TEAM WHERE event_id = @Event_ID;" +
-                "DELETE FROM ANNOUNCEMENT WHERE event_id = @Event_ID;";
+                            "DELETE FROM SESSION WHERE event_id = @Event_ID;" +
+                            "DELETE FROM TEAM WHERE event_id = @Event_ID;" +
+                            "DELETE FROM ANNOUNCEMENT WHERE event_id = @Event_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
