@@ -56,6 +56,7 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("session")]
         public IActionResult CreateSession(Session session)
         {
@@ -74,6 +75,7 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("team")]
         public IActionResult CreateTeam(Team team)
         {
@@ -94,6 +96,7 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("announcement")]
         public IActionResult CreateAnnouncement(Announcement announcement)
         {
@@ -116,6 +119,7 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("user")]
         public IActionResult CreateUser(User user)
         {
