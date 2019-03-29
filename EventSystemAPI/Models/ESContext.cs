@@ -22,7 +22,7 @@ namespace EventSystemAPI.Models
 
         public Event GetEvent(int event_id)
         {
-            string sql = "CALL GetEvent(@Event_ID);";
+            string sql = "SELECT * FROM EVENT WHERE event_id = @Event_ID;";
             Event even;
             using (var con = GetConnection())
             {
@@ -68,7 +68,7 @@ namespace EventSystemAPI.Models
 
         public Session GetSession(int session_id)
         {
-            string sql = "CALL GetSession(@Session_ID);";
+            string sql = "SELECT * FROM SESSION WHERE session_id = @Session_ID;";
             Session session;
             using (var con = GetConnection())
             {
@@ -79,7 +79,7 @@ namespace EventSystemAPI.Models
 
         public List<Session> GetSessionsByEvent(int event_id)
         {
-            string sql = "CALL GetSessionsByEvent(@Event_ID);";
+            string sql = "SELECT * FROM SESSION WHERE event_id = @Event_ID;";
             List<Session> sessions;
             using (var con = GetConnection())
             {
@@ -90,7 +90,7 @@ namespace EventSystemAPI.Models
 
         public List<Team> GetTeamsByEvent(int event_id)
         {
-            string sql = "CALL GetEventTeams(@Event_ID);";
+            string sql = "SELECT * FROM TEAM WHERE event_id = @Event_ID;";
             List<Team> teams;
             using (var con = GetConnection())
             {
@@ -107,7 +107,7 @@ namespace EventSystemAPI.Models
 
         public Team GetTeam(int team_id)
         {
-            string sql = "CALL GetTeam(@Team_ID);";
+            string sql = "SELECT * FROM TEAM WHERE team_id = @Team_ID";
             Team team;
             using (var con = GetConnection())
             {
@@ -119,7 +119,7 @@ namespace EventSystemAPI.Models
 
         public Announcement GetAnnouncement(int announcement_id)
         {
-            string sql = "CALL GetAnnouncement(@Announcement_ID);";
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = @Announcement_ID;";
             Announcement announcment;
             using (var con = GetConnection())
             {
@@ -131,7 +131,7 @@ namespace EventSystemAPI.Models
         public List<Announcement> GetAnnouncementsByEvent(int event_id)
         {
 
-            string sql = "CALL GetAnnouncementsForEvent(@Event_ID);";
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE event_id = @Event_ID;";
             List<Announcement> announcments;
             using (var con = GetConnection())
             {
@@ -142,7 +142,7 @@ namespace EventSystemAPI.Models
 
         public User GetUser(int user_id)
         {
-            string sql = "CALL GetUser(@User_ID);";
+            string sql = "SELECT * FROM USER WHERE user_id = @User_ID;";
             User user;
             using (var con = GetConnection())
             {
@@ -153,7 +153,7 @@ namespace EventSystemAPI.Models
 
         public User GetUser(string email, string password)
         {
-            string sql = "select * from USER where email=@Email and password=@Password";
+            string sql = "SELECT * FROM USER WHERE email = @Email AND password = @Password";
             User user;
             using (var con = GetConnection())
             {
@@ -164,7 +164,7 @@ namespace EventSystemAPI.Models
 
         public List<User> GetTeamUsers(int team_id)
         {
-            string sql = "CALL GetTeamUsers(@Team_ID);";
+            string sql = "SELECT * FROM USER where user_id in (SELECT user_id from USER_TEAM where team_id = @Team_ID);";
             List<User> users;
             using (var con = GetConnection())
             {
@@ -175,7 +175,7 @@ namespace EventSystemAPI.Models
 
         public List<User> GetEventUsers(int event_id)
         {
-            string sql = "SELECT * FROM USER where user_id in (SELECT user_id FROM REGISTRATION where session_id in (Select session_id FROM SESSION where event_id = @Event_ID));";
+            string sql = "SELECT * FROM USER WHERE user_id IN (SELECT user_id FROM REGISTRATION WHERE session_id IN (SELECT session_id FROM SESSION WHERE event_id = @Event_ID));";
             List<User> users;
             using(var con = GetConnection())
             {
@@ -186,7 +186,7 @@ namespace EventSystemAPI.Models
 
         public List<User> GetSessionUsers(int session_id)
         {
-            string sql = "SELECT * FROM USER where user_id in (SELECT user_id FROM REGISTRATION where session_id = @Session_ID);";
+            string sql = "SELECT * FROM USER WHERE user_id IN (SELECT user_id FROM REGISTRATION WHERE session_id = @Session_ID);";
             List<User> users;
             using (var con = GetConnection())
             {
@@ -201,7 +201,8 @@ namespace EventSystemAPI.Models
          *\\\\\\\\\\\\\\\\\\\\\\*/
 
         public void CreateEvent(Event e) {
-            string sql = "CALL CreateEvent(@Address, @Start_Date, @End_Date, @Event_Name, @Description);";
+            string sql = "INSERT into EVENT (address, start_date, end_date, event_name, description) " +
+                            "VALUES(@Address, @Start_Date, @End_Date, @Event_Name, @Description); ";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -217,7 +218,9 @@ namespace EventSystemAPI.Models
 
         public void CreateSession(Session s)
         {
-            string sql = "CALL CreateSession(@Session_Name, @Capacity, @Open_Slots, @Start_Date_Time, @End_Date_Time, @Event_ID);";
+            string sql = "INSERT INTO SESSION(session_name, capacity, open_slots, start_date_time, end_date_time, event_id) " +
+                            "SELECT @Session_Name, @Capacity, @Open_Slots, @Start_Date_Time, @End_Date_Time, event_id " +
+                            "FROM EVENT WHERE event_id = @Event_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -234,7 +237,9 @@ namespace EventSystemAPI.Models
 
         public void CreateTeam(Team t)
         {
-            string sql = "CALL CreateTeam(@Team_Name, @Event_ID);";
+            string sql = "INSERT INTO TEAM(team_name, event_id)" +
+                            "SELECT @Team_Name, event_id" +
+                            "FROM EVENT where event_id = @Event_ID";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
