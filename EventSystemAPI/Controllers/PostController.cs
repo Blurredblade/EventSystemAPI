@@ -126,6 +126,15 @@ namespace EventSystemAPI.Controllers
             db.CreateUser(user);
             return CreatedAtRoute("GetUser", new { user.user_id }, user);
         }
+        /*
+        [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("register-user")]
+        public IActionResult RegisterUser()
+        {
+            //db.CreateUser(user);
+            //return CreatedAtRoute("GetUser", new { user.user_id }, user);
+        }*/
     }
 
 

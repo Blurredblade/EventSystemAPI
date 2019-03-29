@@ -140,6 +140,20 @@ namespace EventSystemAPI.Models
             return announcments;
         }
 
+        public List<Announcement> GetRecentAnnouncementsByUser(int user_id)
+        {
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id IN " +
+                            "(SELECT MAX(announcement_id) FROM ANNOUNCEMENT WHERE event_id IN " +
+                            "(SELECT event_id FROM EVENT WHERE event_id IN (SELECT event_id FROM SESSION WHERE session_id IN " +
+                            "(SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID))) GROUP BY event_id) ORDER BY date_time ASC;";
+            List<Announcement> announcments;
+            using (var con = GetConnection())
+            {
+                announcments = con.Query<Announcement>(sql, new { User_ID = user_id }).ToList();
+            }
+            return announcments;
+        }
+
         public User GetUser(int user_id)
         {
             string sql = "SELECT * FROM USER WHERE user_id = @User_ID;";
@@ -253,8 +267,8 @@ namespace EventSystemAPI.Models
         public void CreateAnnouncement(Announcement a)
         {
             string sql = "INSERT INTO ANNOUNCEMENT(date_time, title, message, event_id)" +
-                            "SELECT @Date_Time, @Title, @Message, event_id" +
-                            "FROM EVENT WHERE event_id = @Event_ID);";
+                            "SELECT @Date_Time, @Title, @Message, event_id " +
+                            "FROM EVENT WHERE event_id = @Event_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -287,7 +301,7 @@ namespace EventSystemAPI.Models
 
         public void RegisterUser(int session_id, int user_id)
         {
-            string sql = "INSERT INTO REGISTRATION VALUES (@Session_ID, @User_ID);";
+            string sql = "INSERT INTO REGISTRATION  VALUES (@Session_ID, @User_ID);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new

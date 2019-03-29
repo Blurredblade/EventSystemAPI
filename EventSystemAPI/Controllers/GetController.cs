@@ -189,6 +189,20 @@ namespace EventSystemAPI.Controllers
             return announcement;
         }
 
+        [HttpGet("{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("recent-announcement")]
+        public ActionResult<List<Announcement>> GetRecentAnnouncementsByUser(int user_id)
+        {
+            List<Announcement> announcement = db.GetRecentAnnouncementsByUser(user_id);
+            if (announcement == null)
+            {
+                return NotFound();
+            }
+            return announcement;
+        }
+
+
         /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
          *\\\\\\\\\\\\\\\ USER METHODS \\\\\\\\\\\\\\\\\
          *\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
