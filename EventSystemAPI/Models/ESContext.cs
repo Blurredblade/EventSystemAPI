@@ -45,7 +45,9 @@ namespace EventSystemAPI.Models
 
         public List<Event> GetEventsList(int user_id)
         {
-            string sql = "SELECT * FROM EVENT WHERE event_id IN (SELECT event_id FROM SESSION WHERE session_id IN (SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC LIMIT 2; ";
+            string sql = "SELECT * FROM EVENT WHERE event_id IN (" +
+                            "SELECT event_id FROM SESSION WHERE session_id IN (" +
+                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC LIMIT 2; ";
             List<Event> events;
             using (var con = GetConnection())
             {
@@ -61,9 +63,9 @@ namespace EventSystemAPI.Models
             using (var con = GetConnection())
             {
                 sessions = con.Query<Session>(sql, new { User_ID = user_id }).ToList();
+
             }
             return sessions;
-
         }
 
         public Session GetSession(int session_id)
@@ -103,6 +105,19 @@ namespace EventSystemAPI.Models
             }
             */
             return teams;
+        }
+
+        public List<User> GetRegisteredTeamUsers(int user_id, int session_id)
+        {
+            string sql = "SELECT * FROM USER WHERE user_id IN " +
+                            "(SELECT user_id FROM REGISTRATION where session_id = 13) AND user_id IN " +
+                            "(SELECT user_id FROM USER_TEAM WHERE team_id = (SELECT team_id FROM USER_TEAM where user_id = 1));";
+            List<User> users;
+            using (var con = GetConnection())
+            {
+                users = con.Query<User>(sql, new { User_ID = user_id, Session_ID = session_id }).ToList();
+            }
+            return users;
         }
 
         public Team GetTeam(int team_id)
