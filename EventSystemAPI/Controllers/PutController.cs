@@ -38,7 +38,15 @@ namespace EventSystemAPI.Controllers
             db.UpdateEvent(e);
             return "Event " + e.event_id + " updated";
         }
-        
+
+        [HttpPut]
+        [ActionName("session")]
+        public string UpdateSession(Session session)
+        {
+            db.UpdateSession(session);
+            return "Event " + session.event_id + " updated";
+        }
+
     }
 
 
