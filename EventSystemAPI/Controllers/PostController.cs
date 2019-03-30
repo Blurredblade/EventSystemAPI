@@ -126,15 +126,15 @@ namespace EventSystemAPI.Controllers
             db.CreateUser(user);
             return CreatedAtRoute("GetUser", new { user.user_id }, user);
         }
-        /*
+        
         [HttpPost]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("register-user")]
-        public IActionResult RegisterUser()
+        public IActionResult RegisterUser(int session_id, int user_id)
         {
-            //db.CreateUser(user);
-            //return CreatedAtRoute("GetUser", new { user.user_id }, user);
-        }*/
+            db.RegisterUser(session_id, user_id);
+            return Ok(new { response = "123" });
+        }
     }
 
 
