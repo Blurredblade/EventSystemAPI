@@ -44,7 +44,7 @@ namespace EventSystemAPI.Controllers
         public string UpdateSession(Session session)
         {
             db.UpdateSession(session);
-            return "Event " + session.event_id + " updated";
+            return "Session " + session.event_id + " updated";
         }
 
     }
