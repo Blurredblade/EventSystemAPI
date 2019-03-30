@@ -239,6 +239,23 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        /* ROUTE esapi/team-users/{team_id}
+ * GET list of all users on a team
+ */
+        [HttpGet("{session_id:int/user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("team-session-users")]
+        public ActionResult<List<User>> GetRegisteredTeamUsers(int user_id, int session_id)
+        {
+            List<User> users = db.GetRegisteredTeamUsers(user_id, session_id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
+
         /* ROUTE esapi/session-users/{session_id}
          * GET list of all users attending the given session
          */
