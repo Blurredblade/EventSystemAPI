@@ -25,6 +25,5 @@ namespace EventSystemAPI.Models
         public DateTime start_date_time { get; set; }
         public DateTime end_date_time { get; set; }
         public int event_id { get; set; }
-        public List<User> attendees { get; set; }
     }
 }
