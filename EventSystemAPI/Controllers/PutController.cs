@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EventSystemAPI.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace EventSystemAPI.Controllers
 {
@@ -32,6 +33,7 @@ namespace EventSystemAPI.Controllers
            }
          */
         [HttpPut]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("event")]
         public string UpdateEvent(Event e)
         {
@@ -40,6 +42,7 @@ namespace EventSystemAPI.Controllers
         }
 
         [HttpPut]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("session")]
         public string UpdateSession(Session session)
         {
