@@ -242,7 +242,7 @@ namespace EventSystemAPI.Controllers
         /* ROUTE esapi/team-users/{team_id}
  * GET list of all users on a team
  */
-        [HttpGet("{session_id:int/user_id:int}")]
+        [HttpGet("{session_id:int}/{user_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("team-session-users")]
         public ActionResult<List<User>> GetRegisteredTeamUsers(int user_id, int session_id)
