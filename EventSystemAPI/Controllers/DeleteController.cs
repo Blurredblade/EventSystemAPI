@@ -27,6 +27,15 @@ namespace EventSystemAPI.Controllers
         {
             db.DeleteEvent(event_id);
         }
+
+        [HttpDelete("{session_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("delete-event")]
+        public void DeleteSession(int session_id)
+        {
+            db.DeleteSession(session_id);
+        }
+
     }
 
 
