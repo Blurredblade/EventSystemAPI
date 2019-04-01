@@ -134,7 +134,7 @@ namespace EventSystemAPI.Models
 
         public Announcement GetAnnouncement(int announcement_id)
         {
-            string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = @Announcement_ID ORDER BY date_time ASC;";
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = @Announcement_ID;";
             Announcement announcment;
             using (var con = GetConnection())
             {
@@ -146,7 +146,7 @@ namespace EventSystemAPI.Models
         public List<Announcement> GetAnnouncementsByEvent(int event_id)
         {
 
-            string sql = "SELECT * FROM ANNOUNCEMENT WHERE event_id = @Event_ID ORDER BY date_time ASC;";
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE event_id = @Event_ID ORDER BY date_time DESC;";
             List<Announcement> announcments;
             using (var con = GetConnection())
             {
