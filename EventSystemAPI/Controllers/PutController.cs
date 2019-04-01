@@ -41,6 +41,20 @@ namespace EventSystemAPI.Controllers
             return "Event " + e.event_id + " updated";
         }
 
+        /* ROUTE esapi/session
+         * POST a session into the SESSION table
+         * body of the POST must be formatted as follows:
+
+           {
+            "session_name":string,
+            "capacity":int,
+            "start_date_time":datetime/string,
+            "end_date_time":datetime/string,
+            "session_id":int
+           }
+
+         */
+
         [HttpPut]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("session")]

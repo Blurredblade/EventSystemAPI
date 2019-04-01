@@ -133,7 +133,7 @@ namespace EventSystemAPI.Controllers
         public IActionResult RegisterUser(int session_id, int user_id)
         {
             db.RegisterUser(session_id, user_id);
-            return Ok(new { response = "123" });
+            return NoContent();
         }
     }
 

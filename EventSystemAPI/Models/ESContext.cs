@@ -316,13 +316,13 @@ namespace EventSystemAPI.Models
 
         public void RegisterUser(int session_id, int user_id)
         {
-            string sql = "INSERT INTO REGISTRATION  VALUES (@Session_ID, @User_ID);";
+            string sql = "INSERT INTO REGISTRATION  VALUES (@User_ID, @Session_ID);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
                 {
+                    User_ID = user_id,
                     Session_ID = session_id,
-                    User_ID = user_id
                 });
             }
         }
