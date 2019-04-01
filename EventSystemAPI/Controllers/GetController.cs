@@ -272,6 +272,19 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        [HttpGet("{session_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("checked-in-users")]
+        public ActionResult<List<int>> GetCheckedInUsers(int session_id)
+        {
+            List<int> users = db.GetCheckedInUsers(session_id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
         /* ROUTE esapi/session-users/{session_id}
          * GET list of all users attending the given session
          */

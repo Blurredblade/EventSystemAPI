@@ -134,7 +134,7 @@ namespace EventSystemAPI.Models
 
         public Announcement GetAnnouncement(int announcement_id)
         {
-            string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = @Announcement_ID;";
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = @Announcement_ID ORDER BY date_time ASC;";
             Announcement announcment;
             using (var con = GetConnection())
             {
@@ -146,7 +146,7 @@ namespace EventSystemAPI.Models
         public List<Announcement> GetAnnouncementsByEvent(int event_id)
         {
 
-            string sql = "SELECT * FROM ANNOUNCEMENT WHERE event_id = @Event_ID;";
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE event_id = @Event_ID ORDER BY date_time ASC;";
             List<Announcement> announcments;
             using (var con = GetConnection())
             {
@@ -220,6 +220,17 @@ namespace EventSystemAPI.Models
             using (var con = GetConnection())
             {
                 users = con.Query<User>(sql, new { Session_ID = session_id }).ToList();
+            }
+            return users;
+        }
+
+        public List<int> GetCheckedInUsers(int session_id)
+        {
+            string sql = "SELECT user_id FROM REGISTRATION WHERE session_id = @Session_ID AND checked_in = 1;";
+            List<int> users;
+            using (var con = GetConnection())
+            {
+                users = con.Query<int>(sql, new { Session_ID = session_id }).ToList();
             }
             return users;
         }
@@ -316,7 +327,7 @@ namespace EventSystemAPI.Models
 
         public void RegisterUser(int session_id, int user_id)
         {
-            string sql = "INSERT INTO REGISTRATION  VALUES (@User_ID, @Session_ID);";
+            string sql = "INSERT INTO REGISTRATION (user_id, session_id, checked_in) VALUES (@User_ID, @Session_ID, 0);";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -425,7 +436,18 @@ namespace EventSystemAPI.Models
             }
         }
 
-
+        public void CheckInUser(int session_id, int user_id)
+        {
+            string sql = "UPDATE REGISTRATION SET checked_in = 1 WHERE session_id = @Session_ID AND user_id = @User_ID;";
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Session_ID = session_id,
+                    User_ID = user_id
+                });
+            }
+        }
 
 
         /*\\\\\\\\\\\\\\\\\\\\\\
