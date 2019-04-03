@@ -136,15 +136,7 @@ namespace EventSystemAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("{session_id:int}/{user_id:int}")]
-        [EnableCors("AllowSpecificOrigin")]
-        [ActionName("check-in-user")]
-        public IActionResult CheckInUser(int session_id, int user_id)
-        {
-            db.CheckInUser(session_id, user_id);
-            return NoContent();
-        }
-
+        
     }
 
 
