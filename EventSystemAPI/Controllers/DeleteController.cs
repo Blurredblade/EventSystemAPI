@@ -44,6 +44,14 @@ namespace EventSystemAPI.Controllers
             db.DeleteAnnouncement(announcement_id);
         }
 
+        [HttpDelete("{session_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("unregister-user")]
+        public void Unregister(int session_id, int user_id)
+        {
+            db.RemoveUserFromSession(session_id, user_id);
+        }
+
     }
 
 
