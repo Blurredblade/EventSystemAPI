@@ -38,8 +38,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("event")]
         public IActionResult CreateEvent(Event e)
         {
-            db.CreateEvent(e);
-            return CreatedAtRoute("GetEvent", new { e.event_id }, e);
+            Event new_event = db.CreateEvent(e);
+            return CreatedAtRoute("GetEvent", new { event_id = new_event.event_id }, new_event);
         }
 
         /* ROUTE esapi/session

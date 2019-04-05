@@ -47,7 +47,7 @@ namespace EventSystemAPI.Models
         {
             string sql = "SELECT * FROM EVENT WHERE event_id IN (" +
                             "SELECT event_id FROM SESSION WHERE session_id IN (" +
-                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC LIMIT 2; ";
+                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC; ";
             List<Event> events;
             using (var con = GetConnection())
             {
@@ -240,9 +240,11 @@ namespace EventSystemAPI.Models
          *\\\CREATE Functions\\\
          *\\\\\\\\\\\\\\\\\\\\\\*/
 
-        public void CreateEvent(Event e) {
+        public Event CreateEvent(Event e) {
             string sql = "INSERT into EVENT (address, start_date, end_date, event_name, description) " +
                             "VALUES(@Address, @Start_Date, @End_Date, @Event_Name, @Description); ";
+            string callbacksql = "SELECT * FROM EVENT WHERE event_id = LAST_INSERT_ID();";
+            Event new_event;
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -253,7 +255,10 @@ namespace EventSystemAPI.Models
                     Event_Name = e.event_name,
                     Description = e.description
                 });
+
+                new_event = con.Query<Event>(callbacksql).First();
             }
+            return new_event;
         }
 
         public void CreateSession(Session s)
