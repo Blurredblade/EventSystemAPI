@@ -50,6 +50,23 @@ namespace EventSystemAPI.Controllers
             return events;
         }
 
+        [HttpGet("{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("recent-events")]
+        public ActionResult<List<Event>> GetRecentEvents(int user_id)
+        {
+            List<Event> events;
+            
+            events = db.GetRecentEvents(user_id);
+
+            if (events == null)
+            {
+                return NotFound();
+            }
+
+            return events;
+        }
+
 
         /* ROUTE esapi/event/{event_id}
         * GET an event by its id
