@@ -60,7 +60,7 @@ namespace EventSystemAPI.Models
         {
             string sql = "SELECT * FROM EVENT WHERE event_id IN (" +
                             "SELECT event_id FROM SESSION WHERE session_id IN (" +
-                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC; ";
+                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC LIMIT 2; ";
             List<Event> events;
             using (var con = GetConnection())
             {
