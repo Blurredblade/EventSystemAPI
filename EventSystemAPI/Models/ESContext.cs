@@ -173,7 +173,7 @@ namespace EventSystemAPI.Models
             string sql = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id IN " +
                             "(SELECT MAX(announcement_id) FROM ANNOUNCEMENT WHERE event_id IN " +
                             "(SELECT event_id FROM EVENT WHERE event_id IN (SELECT event_id FROM SESSION WHERE session_id IN " +
-                            "(SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID))) GROUP BY event_id) ORDER BY date_time ASC;";
+                            "(SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID))) GROUP BY event_id) ORDER BY date_time ASC LIMIT 2;";
             List<Announcement> announcments;
             using (var con = GetConnection())
             {
