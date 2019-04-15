@@ -60,8 +60,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("session")]
         public IActionResult CreateSession(Session session)
         {
-            db.CreateSession(session);
-            return CreatedAtRoute("GetSession", new { session.session_id }, session);
+            Session new_session = db.CreateSession(session);
+            return CreatedAtRoute("GetSession", new {session_id = new_session.session_id }, new_session);
         }
 
         /* ROUTE esapi/team
@@ -79,8 +79,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("team")]
         public IActionResult CreateTeam(Team team)
         {
-            db.CreateTeam(team);
-            return CreatedAtRoute("GetTeam", new { team.team_id }, team);
+            Team new_team = db.CreateTeam(team);
+            return CreatedAtRoute("GetTeam", new { team_id = new_team.team_id }, new_team);
         }
 
         /* ROUTE esapi/announcement

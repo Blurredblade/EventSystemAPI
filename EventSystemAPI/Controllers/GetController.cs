@@ -272,6 +272,19 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        [HttpGet("{event:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("teamless-users")]
+        public ActionResult<List<User>> GetTeamlessUsers(int event_id)
+        {
+            List<User> users = db.GetUsersWithoutTeam(event_id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
 
         /* ROUTE esapi/session-users/{session_id}
          * GET list of all users attending the given session

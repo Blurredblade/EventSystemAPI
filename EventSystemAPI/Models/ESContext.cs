@@ -60,7 +60,7 @@ namespace EventSystemAPI.Models
         {
             string sql = "SELECT * FROM EVENT WHERE event_id IN (" +
                             "SELECT event_id FROM SESSION WHERE session_id IN (" +
-                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC LIMIT 2; ";
+                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) AND end_date >= CURDATE() ORDER BY start_date ASC LIMIT 2; ";
             List<Event> events;
             using (var con = GetConnection())
             {
@@ -103,6 +103,21 @@ namespace EventSystemAPI.Models
             return sessions;
         }
 
+        public List<User> GetUsersWithoutTeam(int event_id)
+        {
+            string sql = "SELECT * FROM USER WHERE user_id IN " +
+                            "(SELECT user_id FROM REGISTRATION WHERE session_id IN" +
+                            "(SELECT session_id FROM SESSION WHERE event_id = @Event_ID)) AND user_id NOT IN " +
+                            "(SELECT user_id FROM USER_TEAM where team_id IN " +
+                            "(SELECT team_id FROM TEAM WHERE event_id = @Event_ID)); ";
+            List<User> users;
+            using (var con = GetConnection())
+            {
+                users = con.Query<User>(sql, new { Event_ID = event_id }).ToList();
+            }
+            return users;
+        }
+
         public List<Team> GetTeamsByEvent(int event_id)
         {
             string sql = "SELECT * FROM TEAM WHERE event_id = @Event_ID;";
@@ -141,7 +156,7 @@ namespace EventSystemAPI.Models
             {
                 team = con.QuerySingleOrDefault<Team>(sql, new { Team_ID = team_id });
             }
-            team.members = GetTeamUsers(team_id);
+            //team.members = GetTeamUsers(team_id);
             return team;
         }
 
@@ -175,7 +190,7 @@ namespace EventSystemAPI.Models
                             "(SELECT event_id FROM " +
                             "(SELECT* FROM EVENT WHERE event_id IN " +
                             "(SELECT event_id FROM SESSION WHERE session_id IN " +
-                            "(SELECT session_id FROM REGISTRATION WHERE user_id = 1)) ORDER BY start_date ASC LIMIT 2) as e) GROUP BY event_id);";
+                            "(SELECT session_id FROM REGISTRATION WHERE user_id = 1)) AND end_date >= CURDATE() ORDER BY start_date ASC LIMIT 2) as e) GROUP BY event_id);";
             List<Announcement> announcments;
             using (var con = GetConnection())
             {
@@ -257,33 +272,33 @@ namespace EventSystemAPI.Models
 
         public Event CreateEvent(Event e) {
             string sql = "INSERT into EVENT (address, start_date, end_date, event_name, description) " +
-                            "VALUES(@Address, @Start_Date, @End_Date, @Event_Name, @Description); ";
-            string callbacksql = "SELECT * FROM EVENT WHERE event_id = LAST_INSERT_ID();";
+                            "VALUES(@Address, @Start_Date, @End_Date, @Event_Name, @Description); "+
+                            "SELECT * FROM EVENT WHERE event_id = LAST_INSERT_ID();";
             Event new_event;
             using (var con = GetConnection())
             {
-                con.Execute(sql, new
+                new_event = con.Query<Event>(sql, new
                 {
                     Address = e.address,
                     Start_Date = e.start_date,
                     End_Date = e.end_date,
                     Event_Name = e.event_name,
                     Description = e.description
-                });
-
-                new_event = con.Query<Event>(callbacksql).First();
+                }).First();
             }
             return new_event;
         }
 
-        public void CreateSession(Session s)
+        public Session CreateSession(Session s)
         {
             string sql = "INSERT INTO SESSION(session_name, capacity, open_slots, start_date_time, end_date_time, event_id) " +
                             "SELECT @Session_Name, @Capacity, @Open_Slots, @Start_Date_Time, @End_Date_Time, event_id " +
-                            "FROM EVENT WHERE event_id = @Event_ID;";
+                            "FROM EVENT WHERE event_id = @Event_ID;"+
+                            "SELECT * FROM SESSION WHERE session_id = LAST_INSERT_ID();";
+            Session session;
             using (var con = GetConnection())
             {
-                con.Execute(sql, new
+                session = con.Query<Session>(sql, new
                 {
                     Session_Name = s.session_name,
                     Capacity = s.capacity,
@@ -291,15 +306,20 @@ namespace EventSystemAPI.Models
                     Start_Date_Time = s.start_date_time,
                     End_Date_Time = s.end_date_time,
                     Event_ID = s.event_id
-                });
+                }).First();
             }
+            return session;
         }
 
-        public void CreateTeam(Team t)
+        public Team CreateTeam(Team t)
         {
             string sql = "INSERT INTO TEAM(team_name, event_id)" +
-                            "SELECT @Team_Name, event_id" +
-                            "FROM EVENT where event_id = @Event_ID";
+                            "SELECT @Team_Name, event_id " +
+                            "FROM EVENT where event_id = @Event_ID;";
+            string teamcheck = "SELECT COUNT(1) FROM TEAM WHERE team_id = LAST_INSERT_ID() AND team_name = @Team_Name;";
+            string callback = "SELECT team_id FROM TEAM WHERE team_id = LAST_INSERT_ID();";
+            string usersql = "INSERT INTO USER_TEAM(user_id, team_id) VALUES (@User_ID, @Team_ID);";
+            Team team = t;
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -307,7 +327,26 @@ namespace EventSystemAPI.Models
                     Team_Name = t.team_name,
                     Event_ID = t.event_id
                 });
+
+                if(con.ExecuteScalar<bool>(teamcheck, new { Team_Name = t.team_name }))
+                {
+                    List<User> users = GetEventUsers(t.event_id);
+                    team.team_id = con.Query<int>(callback).First();
+                    for(int x = 0; x < t.members.Length; x++)
+                    {
+                        if (users.Exists((user) => user.user_id == t.members[x]))
+                        {
+                            con.Execute(usersql, new
+                            {
+                                User_ID = t.members[x],
+                                Team_ID = team.team_id
+                            });
+                        }
+                    }
+                }
+
             }
+            return team;
         }
 
         public void CreateAnnouncement(Announcement a)
