@@ -100,8 +100,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("announcement")]
         public IActionResult CreateAnnouncement(Announcement announcement)
         {
-            db.CreateAnnouncement(announcement);
-            return CreatedAtRoute("GetAnnouncement", new { announcement.announcement_id }, announcement);
+            Announcement new_announcement = db.CreateAnnouncement(announcement);
+            return CreatedAtRoute("GetAnnouncement", new { announcement_id = new_announcement.announcement_id }, new_announcement);
         }
 
         /* ROUTE esapi/user
@@ -123,8 +123,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("user")]
         public IActionResult CreateUser(User user)
         {
-            db.CreateUser(user);
-            return CreatedAtRoute("GetUser", new { user.user_id }, user);
+            User new_user = db.CreateUser(user);
+            return CreatedAtRoute("GetUser", new { user_id = new_user.user_id }, new_user);
         }
         
         [HttpPost("{session_id:int}/{user_id:int}")]
