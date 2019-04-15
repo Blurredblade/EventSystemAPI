@@ -34,7 +34,7 @@ namespace EventSystemAPI.Models
 
         public List<Event> GetEventsList()
         {
-            string sql = "SELECT * FROM EVENT;";
+            string sql = "SELECT * FROM EVENT WHERE end_date >= CURDATE();";
             List<Event> events;
             using (var con = GetConnection())
             {
@@ -47,7 +47,7 @@ namespace EventSystemAPI.Models
         {
             string sql = "SELECT * FROM EVENT WHERE event_id IN (" +
                             "SELECT event_id FROM SESSION WHERE session_id IN (" +
-                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) ORDER BY start_date ASC; ";
+                            "SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) AND end_date >= CURDATE() ORDER BY start_date ASC; ";
             List<Event> events;
             using (var con = GetConnection())
             {
@@ -349,30 +349,35 @@ namespace EventSystemAPI.Models
             return team;
         }
 
-        public void CreateAnnouncement(Announcement a)
+        public Announcement CreateAnnouncement(Announcement a)
         {
             string sql = "INSERT INTO ANNOUNCEMENT(date_time, title, message, event_id)" +
                             "SELECT @Date_Time, @Title, @Message, event_id " +
-                            "FROM EVENT WHERE event_id = @Event_ID;";
+                            "FROM EVENT WHERE event_id = @Event_ID;" +
+                            "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = LAST_INSERT_ID();";
+            Announcement announcement;
             using (var con = GetConnection())
             {
-                con.Execute(sql, new
+                announcement = con.Query<Announcement>(sql, new
                 {
                     Date_Time = a.date_time,
                     Title = a.title,
                     Message = a.message,
                     Event_ID = a.event_id
-                });
+                }).First();
             }
+            return announcement;
         }
 
-        public void CreateUser(User u)
+        public User CreateUser(User u)
         {
             string sql = "INSERT INTO USER (first_name, last_name, email, password, phone, is_admin)" +
-                            "VALUES(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);";
+                            "VALUES(@First_Name, @Last_Name, @Email, @Password, @Phone, @IsAdmin);" +
+                            "SELECT * FROM USER WHERE user_id = LAST_INSERT_ID();";
+            User user;
             using (var con = GetConnection())
             {
-                con.Execute(sql, new
+                user = con.Query<User>(sql, new
                 {
                     First_Name = u.first_name,
                     Last_Name = u.last_name,
@@ -380,8 +385,9 @@ namespace EventSystemAPI.Models
                     Password = u.password,
                     Phone = u.phone,
                     IsAdmin = u.is_admin
-                });
+                }).First();
             }
+            return user;
         }
 
         public void RegisterUser(int session_id, int user_id)
@@ -477,9 +483,11 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void UpdateUser(User u)
+        public User UpdateUser(User u)
         {
             string sql = "UPDATE USER SET first_name = @First_Name, last_name = @Last_Name, email = @Email, password = @Password, phone = @Phone, is_admin = @Is_Admin WHERE user_id = @U_ID;";
+            string callback = "SELECT* FROM USER WHERE user_id = @U_ID";
+            User user = null;
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -489,10 +497,12 @@ namespace EventSystemAPI.Models
                     Email = u.email,
                     Password = u.password,
                     Phone = u.phone,
-                    IsAdmin = u.is_admin,
+                    Is_Admin = u.is_admin,
                     U_ID = u.user_id
                 });
+                user = con.QueryFirstOrDefault<User>(callback, new { U_ID = u.user_id });
             }
+            return user;
         }
 
         public void CheckInUser(int session_id, int user_id)

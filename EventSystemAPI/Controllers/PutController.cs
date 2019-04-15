@@ -73,6 +73,22 @@ namespace EventSystemAPI.Controllers
             return NoContent();
         }
 
+        [HttpPut]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("user")]
+        public string UpdateUser(User user)
+        {
+            User updated_user = db.UpdateUser(user);
+
+            if (updated_user == null)
+            {
+                return "The specified user does not exist (User ID: " + user.user_id + ").";
+            }
+            else
+            {
+                return "Sucessfully updated user " + user.user_id + ".";
+            }
+        }
 
     }
 
