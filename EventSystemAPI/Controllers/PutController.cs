@@ -82,11 +82,14 @@ namespace EventSystemAPI.Controllers
 
             if (updated_user == null)
             {
-                return "The specified user does not exist (User ID: " + user.user_id + ").";
+                return "The specified user does not exist.";
+            }else if (user.Equals(updated_user))
+            {
+                return "No changes were made.";
             }
             else
             {
-                return "Sucessfully updated user " + user.user_id + ".";
+                return "Account information sucessfully updated.";
             }
         }
 
