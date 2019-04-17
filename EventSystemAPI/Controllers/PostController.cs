@@ -100,8 +100,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("announcement")]
         public IActionResult CreateAnnouncement(Announcement announcement)
         {
-            Announcement new_announcement = db.CreateAnnouncement(announcement);
-            return CreatedAtRoute("GetAnnouncement", new { announcement_id = new_announcement.announcement_id }, new_announcement);
+            db.CreateAnnouncement(announcement);
+            return CreatedAtRoute("GetAnnouncement", new { announcement.announcement_id }, announcement);
         }
 
         /* ROUTE esapi/user

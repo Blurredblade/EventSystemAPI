@@ -206,6 +206,20 @@ namespace EventSystemAPI.Controllers
             return announcement;
         }
 
+
+        [HttpGet]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("global-announcement")]
+        public ActionResult<List<Announcement>> GetGlobalAnnouncements()
+        {
+            List<Announcement> announcements = db.GetGlobalAnnouncements();
+            if (announcements == null)
+            {
+                return NotFound();
+            }
+            return announcements;
+        }
+
         [HttpGet("{user_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("recent-announcement")]

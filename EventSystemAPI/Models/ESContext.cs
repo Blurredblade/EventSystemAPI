@@ -199,6 +199,17 @@ namespace EventSystemAPI.Models
             return announcments;
         }
 
+        public List<Announcement> GetGlobalAnnouncements()
+        {
+            string sql = "SELECT * FROM ANNOUNCEMENT WHERE event_id = -1;";
+            List<Announcement> announcements;
+            using (var con = GetConnection())
+            {
+                announcements = con.Query<Announcement>(sql).ToList();
+            }
+            return announcements;
+        }
+
         public User GetUser(int user_id)
         {
             string sql = "SELECT * FROM USER WHERE user_id = @User_ID;";
@@ -349,24 +360,19 @@ namespace EventSystemAPI.Models
             return team;
         }
 
-        public Announcement CreateAnnouncement(Announcement a)
+        public void CreateAnnouncement(Announcement a)
         {
-            string sql = "INSERT INTO ANNOUNCEMENT(date_time, title, message, event_id)" +
-                            "SELECT @Date_Time, @Title, @Message, event_id " +
-                            "FROM EVENT WHERE event_id = @Event_ID;" +
-                            "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = LAST_INSERT_ID();";
-            Announcement announcement;
+            string sql = "INSERT INTO ANNOUNCEMENT(date_time, title, message, event_id) VALUES(@Date_Time, @Title, @Message, @Event_ID);";
             using (var con = GetConnection())
             {
-                announcement = con.Query<Announcement>(sql, new
+                con.Execute(sql, new
                 {
                     Date_Time = a.date_time,
                     Title = a.title,
                     Message = a.message,
                     Event_ID = a.event_id
-                }).First();
+                });
             }
-            return announcement;
         }
 
         public User CreateUser(User u)
@@ -392,7 +398,10 @@ namespace EventSystemAPI.Models
 
         public void RegisterUser(int session_id, int user_id)
         {
-            string sql = "INSERT INTO REGISTRATION (user_id, session_id, checked_in) VALUES (@User_ID, @Session_ID, 0);";
+            string sql = "INSERT INTO REGISTRATION (user_id, session_id, checked_in)" +
+                            "SELECT @User_ID, session_id, 0 " +
+                            "FROM SESSION WHERE session_id = @Session_ID AND open_slots > 0;" +
+                            "UPDATE SESSION SET open_slots = open_slots - 1 WHERE session_id = @Session_ID AND open_slots > 0;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -589,7 +598,8 @@ namespace EventSystemAPI.Models
 
         public void RemoveUserFromSession(int session_id, int user_id)
         {
-            string sql = "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;";
+            string sql = "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;" +
+                            "UPDATE SESSION SET open_slots = open_slots + 1 WHERE session_id = @Session_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
