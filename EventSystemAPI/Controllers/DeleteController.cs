@@ -52,7 +52,12 @@ namespace EventSystemAPI.Controllers
             db.RemoveUserFromSession(session_id, user_id);
         }
 
+        [HttpDelete("{team_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("team-all")]
+        public void RemoveAllUsersThenTeam(int team_id)
+        {
+            db.RemoveAllUsersThenTeam(team_id);
+        }
     }
-
-
 }
