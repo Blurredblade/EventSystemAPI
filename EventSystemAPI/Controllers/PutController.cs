@@ -73,6 +73,15 @@ namespace EventSystemAPI.Controllers
             return NoContent();
         }
 
+        [HttpPut("{session_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("team")]
+        public IActionResult Check(Team team)
+        {
+            db.UpdateTeam(team);
+            return NoContent();
+        }
+
         [HttpPut]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("user")]

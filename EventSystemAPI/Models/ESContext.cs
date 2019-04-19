@@ -120,18 +120,19 @@ namespace EventSystemAPI.Models
 
         public List<Team> GetTeamsByEvent(int event_id)
         {
-            string sql = "SELECT * FROM TEAM WHERE event_id = @Event_ID;";
+            string sql = "SELECT * FROM TEAM WHERE event_id = @Event_ID ORDER BY team_id;";
+            string countsql = "SELECT COUNT(ut.team_id) FROM USER_TEAM as ut RIGHT JOIN TEAM as t ON ut.team_id = t.team_id WHERE t.team_id IN(SELECT team_id FROM TEAM WHERE event_id = @Event_ID) GROUP BY t.team_id ORDER BY t.team_id; ";
             List<Team> teams;
+            int[] count;
             using (var con = GetConnection())
             {
                 teams = con.Query<Team>(sql, new { Event_ID = event_id }).ToList();
+                count = con.Query<int>(countsql, new { Event_ID = event_id }).ToArray();
             }
-            /*
-            foreach (Team t in teams)
+            for(int x = 0; x < count.Length; x++)
             {
-                t.members = GetTeamUsers(t.team_id);
+                teams[x].memberCount = count[x];
             }
-            */
             return teams;
         }
 
@@ -598,8 +599,8 @@ namespace EventSystemAPI.Models
 
         public void RemoveUserFromSession(int session_id, int user_id)
         {
-            string sql = "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;" +
-                            "UPDATE SESSION SET open_slots = open_slots + 1 WHERE session_id = @Session_ID;";
+            string sql = "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;"; //+
+                            //"UPDATE SESSION SET open_slots = open_slots + 1 WHERE session_id = @Session_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
