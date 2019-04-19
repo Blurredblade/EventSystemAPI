@@ -623,5 +623,19 @@ namespace EventSystemAPI.Models
                 });
             }
         }
+
+        public void RemoveAllUsersThenTeam(int team_id)
+        {
+            string sql = "DELETE FROM USER_TEAM WHERE team_id = @Team_ID;" +
+                         "DELETE FROM TEAM WHERE team_id = @Team_ID;";
+
+            using (var con = GetConnection())
+            {
+                con.Execute(sql, new
+                {
+                    Team_ID = team_id
+                });
+            }
+        }
     }
 }
