@@ -54,10 +54,10 @@ namespace EventSystemAPI.Controllers
 
         [HttpDelete("{team_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
-        [ActionName("team-all")]
-        public void RemoveAllUsersThenTeam(int team_id)
+        [ActionName("delete-team")]
+        public void DeleteTeam(int team_id)
         {
-            db.RemoveAllUsersThenTeam(team_id);
+            db.DeleteTeam(team_id);
         }
     }
 }

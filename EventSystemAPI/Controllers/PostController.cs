@@ -136,7 +136,16 @@ namespace EventSystemAPI.Controllers
             return NoContent();
         }
 
-        
+        [HttpPost("{team_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("add-user-team")]
+        public IActionResult AddUserToTeam(int team_id, int user_id)
+        {
+            db.AddUserToTeam(team_id, user_id);
+            return NoContent();
+        }
+
+
     }
 
 

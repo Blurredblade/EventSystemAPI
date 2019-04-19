@@ -76,7 +76,7 @@ namespace EventSystemAPI.Controllers
         [HttpPut("{session_id:int}/{user_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("team")]
-        public IActionResult Check(Team team)
+        public IActionResult UpdateTeam(Team team)
         {
             db.UpdateTeam(team);
             return NoContent();
