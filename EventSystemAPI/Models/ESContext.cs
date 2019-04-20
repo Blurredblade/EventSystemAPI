@@ -191,7 +191,7 @@ namespace EventSystemAPI.Models
                             "(SELECT event_id FROM " +
                             "(SELECT* FROM EVENT WHERE event_id IN " +
                             "(SELECT event_id FROM SESSION WHERE session_id IN " +
-                            "(SELECT session_id FROM REGISTRATION WHERE user_id = 1)) AND end_date >= CURDATE() ORDER BY start_date ASC LIMIT 2) as e) GROUP BY event_id);";
+                            "(SELECT session_id FROM REGISTRATION WHERE user_id = @User_ID)) AND end_date >= CURDATE() ORDER BY start_date ASC LIMIT 2) as e) GROUP BY event_id);";
             List<Announcement> announcments;
             using (var con = GetConnection())
             {
