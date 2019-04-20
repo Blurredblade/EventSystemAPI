@@ -59,5 +59,13 @@ namespace EventSystemAPI.Controllers
         {
             db.DeleteTeam(team_id);
         }
+
+        [HttpDelete("{team_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("delete-team-user")]
+        public void RemoveUserFromTeam(int team_id, int user_id)
+        {
+            db.RemoveUserFromTeam(team_id, user_id);
+        }
     }
 }

@@ -617,7 +617,7 @@ namespace EventSystemAPI.Models
 
         public void RemoveUserFromTeam(int team_id, int user_id)
         {
-            string sql = "DELETE FROM TEAM WHERE user_id = @User_ID AND team_id = @Team_ID;";
+            string sql = "DELETE FROM USER_TEAM WHERE user_id = @User_ID AND team_id = @Team_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
