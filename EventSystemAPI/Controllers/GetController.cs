@@ -286,7 +286,7 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
-        [HttpGet("{event:int}")]
+        [HttpGet("{event_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("teamless-users")]
         public ActionResult<List<User>> GetTeamlessUsers(int event_id)
