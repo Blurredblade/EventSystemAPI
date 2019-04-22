@@ -25,5 +25,16 @@ namespace EventSystemAPI.Models
         public DateTime start_date_time { get; set; }
         public DateTime end_date_time { get; set; }
         public int event_id { get; set; }
+        public bool Equals(Session s)
+        {
+
+            return session_id == s.session_id &&
+                    session_name == s.session_name &&
+                    capacity == s.capacity &&
+                    open_slots == s.open_slots &&
+                    start_date_time == s.start_date_time &&
+                    end_date_time == s.end_date_time &&
+                    event_id == s.event_id;
+        }
     }
 }
