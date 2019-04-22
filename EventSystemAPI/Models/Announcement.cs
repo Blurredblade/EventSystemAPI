@@ -21,5 +21,15 @@ namespace EventSystemAPI.Models
         public string title { get; set; }
         public string message { get; set; }
         public int event_id { get; set; }
+
+        public bool Equals(Announcement a)
+        {
+
+            return announcement_id == a.announcement_id &&
+                    date_time == a.date_time &&
+                    title == a.title && 
+                    message == a.message &&
+                    event_id == a.event_id;
+        }
     }
 }
