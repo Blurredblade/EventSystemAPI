@@ -328,10 +328,11 @@ namespace EventSystemAPI.Models
             string sql = "INSERT INTO TEAM(team_name, event_id)" +
                             "SELECT @Team_Name, event_id " +
                             "FROM EVENT where event_id = @Event_ID;";
-            string teamcheck = "SELECT COUNT(1) FROM TEAM WHERE team_id = LAST_INSERT_ID() AND team_name = @Team_Name;";
-            string callback = "SELECT team_id FROM TEAM WHERE team_id = LAST_INSERT_ID();";
+            string getid = "SELECT LAST_INSERT_ID();";
+            string teamcheck = "SELECT COUNT(1) FROM TEAM WHERE team_id = @Team_ID AND Team_Name = @Team_Name;";
             string usersql = "INSERT INTO USER_TEAM(user_id, team_id) VALUES (@User_ID, @Team_ID);";
             Team team = t;
+            int team_id;
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -340,19 +341,24 @@ namespace EventSystemAPI.Models
                     Event_ID = t.event_id
                 });
 
-                if(con.ExecuteScalar<bool>(teamcheck, new { Team_Name = t.team_name }))
+                team_id = con.QueryFirstOrDefault<int>(getid);
+
+                if(con.ExecuteScalar<bool>(teamcheck, new { Team_ID = team_id, Team_Name = t.team_name }))
                 {
                     List<User> users = GetEventUsers(t.event_id);
-                    team.team_id = con.Query<int>(callback).First();
-                    for(int x = 0; x < t.members.Length; x++)
+                    for(int x = 0; x < team.members.Length; x++)
                     {
-                        if (users.Exists((user) => user.user_id == t.members[x]))
+                        if (users.Exists((user) => user.user_id == team.members[x]))
                         {
                             con.Execute(usersql, new
                             {
-                                User_ID = t.members[x],
-                                Team_ID = team.team_id
+                                User_ID = team.members[x],
+                                Team_ID = team_id
                             });
+                        }
+                        else
+                        {
+                            team.members[x] = -1;
                         }
                     }
                 }
@@ -478,9 +484,11 @@ namespace EventSystemAPI.Models
             }
         }
 
-        public void UpdateAnnouncement(Announcement a)
+        public Announcement UpdateAnnouncement(Announcement a)
         {
             string sql = "UPDATE ANNOUNCEMENT SET date_time = @Date_Time, title = @Title, message = @Message WHERE announcement_id = @A_ID;";
+            string callback = "SELECT * FROM ANNOUNCEMENT WHERE announcement_id = @A_ID;";
+            Announcement announcement = null;
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
@@ -490,7 +498,9 @@ namespace EventSystemAPI.Models
                     Message = a.message,
                     A_ID = a.announcement_id
                 });
+                announcement = con.QueryFirstOrDefault<Announcement>(callback, new { A_ID = a.announcement_id });
             }
+            return announcement;
         }
 
         public User UpdateUser(User u)
@@ -623,20 +633,6 @@ namespace EventSystemAPI.Models
                 con.Execute(sql, new
                 {
                     User_ID = user_id,
-                    Team_ID = team_id
-                });
-            }
-        }
-
-        public void RemoveAllUsersThenTeam(int team_id)
-        {
-            string sql = "DELETE FROM USER_TEAM WHERE team_id = @Team_ID;" +
-                         "DELETE FROM TEAM WHERE team_id = @Team_ID;";
-
-            using (var con = GetConnection())
-            {
-                con.Execute(sql, new
-                {
                     Team_ID = team_id
                 });
             }
