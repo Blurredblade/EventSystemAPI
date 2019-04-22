@@ -27,8 +27,19 @@ namespace EventSystemAPI.Models
         public DateTime end_date { get; set; }
         public string event_name { get; set; }
         public string description { get; set; }
-        public List<Session> sessions { get; set; }
-        public List<Announcement> announcments { get; set; }
-        public List<Team> teams { get; set; }
+        //public List<Session> sessions { get; set; }
+        //public List<Announcement> announcments { get; set; }
+        //public List<Team> teams { get; set; }
+
+        public bool Equals(Event e)
+        {
+
+            return event_id == e.event_id &&
+                    address == e.address &&
+                    start_date == e.start_date &&
+                    end_date == e.end_date &&
+                    event_name == e.event_name &&
+                    description == e.description;
+        }
     }
 }
