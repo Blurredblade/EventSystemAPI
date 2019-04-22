@@ -603,8 +603,8 @@ namespace EventSystemAPI.Models
 
         public void RemoveUserFromSession(int session_id, int user_id)
         {
-            string sql = "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;" +
-                            "UPDATE SESSION SET open_slots = open_slots + 1 WHERE session_id = @Session_ID;";
+            string sql = "UPDATE SESSION SET open_slots = open_slots + 1 WHERE session_id = @Session_ID;" + 
+                            "DELETE FROM REGISTRATION WHERE user_id = @User_ID AND session_id = @Session_ID;";
             using (var con = GetConnection())
             {
                 con.Execute(sql, new
