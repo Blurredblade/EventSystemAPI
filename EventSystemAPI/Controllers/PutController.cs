@@ -52,9 +52,7 @@ namespace EventSystemAPI.Controllers
             "end_date_time":datetime/string,
             "session_id":int
            }
-
          */
-
         [HttpPut]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("session")]
@@ -76,7 +74,7 @@ namespace EventSystemAPI.Controllers
         [HttpPut("{session_id:int}/{user_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("team")]
-        public IActionResult UpdateTeam(Team team)
+        public ActionResult<string> UpdateTeam(Team team)
         {
             db.UpdateTeam(team);
             return NoContent();
@@ -85,42 +83,51 @@ namespace EventSystemAPI.Controllers
         [HttpPut]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("user")]
-        public string UpdateUser(User user)
+        public ActionResult UpdateUser(User user)
         {
             User updated_user = db.UpdateUser(user);
 
             if (updated_user == null)
             {
-                return "The specified user does not exist.";
+                return NotFound();
             }else if (user.Equals(updated_user))
             {
-                return "No changes were made.";
+                return Ok(updated_user);
             }
             else
             {
-                return "Account information sucessfully updated.";
+                return BadRequest();
             }
         }
 
         /* ROUTE esapi/announcement
-         * Update an event
+         * Update an announcement
          * body of the PUT must be formatted as follows:
            {
-            "event_id":int,
-            "address": string,
-            "start_date": string,
-            "end_date": string,
-            "event_name": string,
-            "description": string
+            "announcement_id": int,
+	        "date_time": string,
+	        "title": string,
+	        "message": string,
+	        "event_id": int
            }
          */
         [HttpPut]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("announcement")]
-        public string UpdateAnnouncement(Event e)
+        public ActionResult UpdateAnnouncement(Announcement announcement)
         {
-            db.UpdateEvent(e);
-            return "Event " + e.event_id + " updated";
+            Announcement updated_announcement = db.UpdateAnnouncement(announcement);
+            if(updated_announcement == null)
+            {
+                return NotFound();
+            }else if (announcement.Equals(updated_announcement))
+            {
+                return Ok(updated_announcement);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
     }
