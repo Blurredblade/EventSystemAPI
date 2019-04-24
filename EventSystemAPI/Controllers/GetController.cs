@@ -50,6 +50,24 @@ namespace EventSystemAPI.Controllers
             return events;
         }
 
+        [HttpGet("{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("recent-events")]
+        public ActionResult<List<Event>> GetRecentEvents(int user_id)
+        {
+            List<Event> events;
+            
+            events = db.GetRecentEvents(user_id);
+
+            if (events == null)
+            {
+                return NotFound();
+            }
+
+            return events;
+        }
+
+
         /* ROUTE esapi/event/{event_id}
         * GET an event by its id
         */
@@ -100,6 +118,20 @@ namespace EventSystemAPI.Controllers
                 return NotFound();
             }
             return session;
+        }
+
+        [HttpGet("{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("user-sessions")]
+        public ActionResult<List<Session>> GetUsersSessionList(int user_id)
+        {
+            List<Session> sessions;
+            sessions = db.GetUsersSessionsList(user_id);
+            if (sessions == null)
+            {
+                return NotFound();
+            }
+            return sessions;
         }
 
         /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -174,6 +206,34 @@ namespace EventSystemAPI.Controllers
             return announcement;
         }
 
+
+        [HttpGet]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("global-announcement")]
+        public ActionResult<List<Announcement>> GetGlobalAnnouncements()
+        {
+            List<Announcement> announcements = db.GetGlobalAnnouncements();
+            if (announcements == null)
+            {
+                return NotFound();
+            }
+            return announcements;
+        }
+
+        [HttpGet("{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("recent-announcement")]
+        public ActionResult<List<Announcement>> GetRecentAnnouncementsByUser(int user_id)
+        {
+            List<Announcement> announcement = db.GetRecentAnnouncementsByUser(user_id);
+            if (announcement == null)
+            {
+                return NotFound();
+            }
+            return announcement;
+        }
+
+
         /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
          *\\\\\\\\\\\\\\\ USER METHODS \\\\\\\\\\\\\\\\\
          *\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -210,6 +270,36 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        /* ROUTE esapi/team-users/{team_id}
+ * GET list of all users on a team
+ */
+        [HttpGet("{session_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("team-session-users")]
+        public ActionResult<List<User>> GetRegisteredTeamUsers(int user_id, int session_id)
+        {
+            List<User> users = db.GetRegisteredTeamUsers(user_id, session_id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
+        [HttpGet("{event_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("teamless-users")]
+        public ActionResult<List<User>> GetTeamlessUsers(int event_id)
+        {
+            List<User> users = db.GetUsersWithoutTeam(event_id);
+            if (users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
+
         /* ROUTE esapi/session-users/{session_id}
          * GET list of all users attending the given session
          */
@@ -220,6 +310,19 @@ namespace EventSystemAPI.Controllers
         {
             List<User> users = db.GetSessionUsers(session_id);
             if(users == null)
+            {
+                return NotFound();
+            }
+            return users;
+        }
+
+        [HttpGet("{session_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("checked-in-users")]
+        public ActionResult<List<int>> GetCheckedInUsers(int session_id)
+        {
+            List<int> users = db.GetCheckedInUsers(session_id);
+            if (users == null)
             {
                 return NotFound();
             }

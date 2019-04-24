@@ -25,5 +25,17 @@ namespace EventSystemAPI.Models
         public string password { get; set; } //need to find a better way to handle this
         public string phone { get; set; }
         public bool is_admin { get; set; }
+
+        public bool Equals(User user)
+        {
+            
+            return user_id == user.user_id &&
+                    first_name == user.first_name &&
+                    last_name == user.last_name &&
+                    email == user.email &&
+                    password == user.password &&
+                    phone == user.phone &&
+                    is_admin == user.is_admin;
+        }
     }
 }

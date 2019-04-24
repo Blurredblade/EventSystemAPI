@@ -38,8 +38,8 @@ namespace EventSystemAPI.Controllers
         [ActionName("event")]
         public IActionResult CreateEvent(Event e)
         {
-            db.CreateEvent(e);
-            return CreatedAtRoute("GetEvent", new { e.event_id }, e);
+            Event new_event = db.CreateEvent(e);
+            return CreatedAtRoute("GetEvent", new { event_id = new_event.event_id }, new_event);
         }
 
         /* ROUTE esapi/session
@@ -56,11 +56,12 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("session")]
         public IActionResult CreateSession(Session session)
         {
-            db.CreateSession(session);
-            return CreatedAtRoute("GetSession", new { session.session_id }, session);
+            Session new_session = db.CreateSession(session);
+            return CreatedAtRoute("GetSession", new {session_id = new_session.session_id }, new_session);
         }
 
         /* ROUTE esapi/team
@@ -74,11 +75,12 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("team")]
         public IActionResult CreateTeam(Team team)
         {
-            db.CreateTeam(team);
-            return CreatedAtRoute("GetTeam", new { team.team_id }, team);
+            Team new_team = db.CreateTeam(team);
+            return CreatedAtRoute("GetTeam", new { team_id = new_team.team_id }, new_team);
         }
 
         /* ROUTE esapi/announcement
@@ -94,6 +96,7 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("announcement")]
         public IActionResult CreateAnnouncement(Announcement announcement)
         {
@@ -116,12 +119,33 @@ namespace EventSystemAPI.Controllers
 
          */
         [HttpPost]
+        [EnableCors("AllowSpecificOrigin")]
         [ActionName("user")]
         public IActionResult CreateUser(User user)
         {
-            db.CreateUser(user);
-            return CreatedAtRoute("GetUser", new { user.user_id }, user);
+            User new_user = db.CreateUser(user);
+            return CreatedAtRoute("GetUser", new { user_id = new_user.user_id }, new_user);
         }
+        
+        [HttpPost("{session_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("register-user")]
+        public IActionResult RegisterUser(int session_id, int user_id)
+        {
+            db.RegisterUser(session_id, user_id);
+            return NoContent();
+        }
+
+        [HttpPost("{team_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("add-user-team")]
+        public IActionResult AddUserToTeam(int team_id, int user_id)
+        {
+            db.AddUserToTeam(team_id, user_id);
+            return NoContent();
+        }
+
+
     }
 
 
