@@ -136,11 +136,22 @@ namespace EventSystemAPI.Models
             return teams;
         }
 
+        public int GetUserTeam(int u_id, int e_id)
+        {
+            string sql = "SELECT team_id FROM TEAM WHERE team_id IN (SELECT team_id FROM USER_TEAM WHERE user_id = @U_ID) AND event_id = @E_ID;";
+            int team_id;
+            using(var con = GetConnection())
+            {
+                team_id = con.QueryFirstOrDefault<int>(sql, new { U_ID = u_id, E_ID = e_id});
+            }
+            return team_id;
+        }
+
         public List<User> GetRegisteredTeamUsers(int user_id, int session_id)
         {
             string sql = "SELECT * FROM USER WHERE user_id IN " +
                             "(SELECT user_id FROM REGISTRATION where session_id = 13) AND user_id IN " +
-                            "(SELECT user_id FROM USER_TEAM WHERE team_id = (SELECT team_id FROM USER_TEAM where user_id = 1));";
+                            "(SELECT user_id FROM USER_TEAM WHERE team_id = (SELECT team_id FROM USER_TEAM where user_id = @User_ID));";
             List<User> users;
             using (var con = GetConnection())
             {
@@ -345,21 +356,13 @@ namespace EventSystemAPI.Models
 
                 if(con.ExecuteScalar<bool>(teamcheck, new { Team_ID = team_id, Team_Name = t.team_name }))
                 {
-                    List<User> users = GetEventUsers(t.event_id);
                     for(int x = 0; x < team.members.Length; x++)
                     {
-                        if (users.Exists((user) => user.user_id == team.members[x]))
-                        {
                             con.Execute(usersql, new
                             {
                                 User_ID = team.members[x],
                                 Team_ID = team_id
                             });
-                        }
-                        else
-                        {
-                            team.members[x] = -1;
-                        }
                     }
                 }
 

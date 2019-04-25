@@ -286,6 +286,21 @@ namespace EventSystemAPI.Controllers
             return users;
         }
 
+        [HttpGet("{event_id:int}/{user_id:int}")]
+        [EnableCors("AllowSpecificOrigin")]
+        [ActionName("user-team")]
+        public ActionResult<int> GetUserTeam(int user_id, int event_id)
+        {
+            int team_id = db.GetUserTeam(user_id, event_id);
+            if (team_id == 0)
+            {
+                return NotFound();
+            }
+            return team_id;
+        }
+
+
+
         [HttpGet("{event_id:int}")]
         [EnableCors("AllowSpecificOrigin")]
         [ActionName("teamless-users")]
